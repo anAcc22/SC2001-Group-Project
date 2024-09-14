@@ -86,6 +86,9 @@ importers:
       sass:
         specifier: ^1.69.5
         version: 1.78.0
+      through2:
+        specifier: ^4.0.2
+        version: 4.0.2
       yargs:
         specifier: ^17.7.2
         version: 17.7.2

@@ -4,7 +4,13 @@
  * By Hakim El Hattab, http://hakim.se
  */
 @import url(./fonts/maple-mono/maple-mono.css);
-section.has-dark-background, section.has-dark-background h1, section.has-dark-background h2, section.has-dark-background h3, section.has-dark-background h4, section.has-dark-background h5, section.has-dark-background h6 {
+section.has-dark-background,
+section.has-dark-background h1,
+section.has-dark-background h2,
+section.has-dark-background h3,
+section.has-dark-background h4,
+section.has-dark-background h5,
+section.has-dark-background h6 {
   color: #efefef;
 }
 
@@ -14,7 +20,7 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
 :root {
   --r-background-color: #efefef;
   --r-main-font: Maple Mono, Helvetica, sans-serif;
-  --r-main-font-size: 24px;
+  --r-main-font-size: 32px;
   --r-main-color: #222;
   --r-block-margin: 20px;
   --r-heading-margin: 0 0 20px 0;
@@ -31,10 +37,10 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
   --r-heading3-size: 1.3em;
   --r-heading4-size: 1em;
   --r-code-font: Maple Mono;
-  --r-link-color: #2a76dd;
-  --r-link-color-dark: #1a53a1;
-  --r-link-color-hover: #6ca0e8;
-  --r-selection-background-color: #98bdef;
+  --r-link-color: #9a6227;
+  --r-link-color-dark: #9a6226;
+  --r-link-color-hover: #aa9237;
+  --r-selection-background-color: #cdbe77;
   --r-selection-color: #efefef;
   --r-overlay-element-bg-color: 0, 0, 0;
   --r-overlay-element-fg-color: 240, 240, 240;
@@ -96,6 +102,31 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
 
 .reveal h2 {
   font-size: var(--r-heading2-size);
+
+  background: var(--r-background-color);
+  background-clip: padding-box;
+  border: solid 5px transparent;
+  padding: 10px;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    margin: -5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      to right,
+      #ba8877,
+      #aa9877,
+      #99aa77,
+      #899989,
+      #8999a8
+    );
+  }
 }
 
 .reveal h3 {
@@ -141,7 +172,8 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
   font-weight: bold;
 }
 
-.reveal em {
+.reveal em,
+.reveal i {
   font-style: italic;
 }
 
@@ -188,12 +220,13 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
 .reveal blockquote {
   display: block;
   position: relative;
-  width: 70%;
+  width: 80%;
+  font-size: 0.8em;
   margin: var(--r-block-margin) auto;
-  padding: 5px;
-  font-style: italic;
+  padding: 10px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
 }
 
 .reveal blockquote p:first-child,
@@ -208,10 +241,10 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
 .reveal pre {
   display: block;
   position: relative;
-  width: 90%;
+  width: 100%;
   margin: var(--r-block-margin) auto;
   text-align: left;
-  font-size: 0.55em;
+  font-size: 0.63em;
   font-family: var(--r-code-font);
   line-height: 1.2em;
   word-wrap: break-word;
@@ -257,13 +290,13 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
   border-bottom: 1px solid;
 }
 
-.reveal table th[align=center],
-.reveal table td[align=center] {
+.reveal table th[align="center"],
+.reveal table td[align="center"] {
   text-align: center;
 }
 
-.reveal table th[align=right],
-.reveal table td[align=right] {
+.reveal table th[align="right"],
+.reveal table td[align="right"] {
   text-align: right;
 }
 

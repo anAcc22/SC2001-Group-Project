@@ -61,7 +61,7 @@ int main() {
 
   auto hybrid_sort = [&](this auto &&self, int l, int r, int s = 1) -> ll {
     if (l >= r) return 0LL;
-    if (l + r - 1 <= s) return insertion_sort(l, r);
+    if (r - l + 1 <= s) return insertion_sort(l, r);
     int m   = midpoint(l, r);
     ll cmps = self(l, m, s) + self(m + 1, r, s);
     cmps += merge(l, m, r);
