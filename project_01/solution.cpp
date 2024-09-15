@@ -4,6 +4,19 @@ using namespace std;
 
 using ll = long long;
 
+struct Timer {
+  using Clock        = std::chrono::steady_clock;
+  using Milliseconds = std::chrono::milliseconds;
+  void reset() { t = Clock::now(); }
+  double getElapsed() {
+    auto elapsed = Clock::now() - t;
+    return std::chrono::duration_cast<Milliseconds>(elapsed).count();
+  }
+
+private:
+  std::chrono::time_point<Clock> t{ Clock::now() };
+};
+
 int main() {
   cin.tie(nullptr)->sync_with_stdio(false);
 
@@ -73,14 +86,203 @@ int main() {
     ranges::generate(a, [&]() { return dist(gen); });
   };
 
-  build(100);
+  // NOTE: <<- Part (i): fix `s` at 50 ->>
 
-  display();
+  /* vector<string> labels, comparisons;
 
-  auto ans = hybrid_sort(0, ssize(a) - 1);
+  for (int len = 1'000, inc = 250; len <= 1'000'000; len *= 10, inc = len / 4) {
+    string start_size = to_string(len), end_size = to_string(10 * len);
+    comparisons = { "Hybrid Sort" };
+    labels      = { "Array Size" };
 
-  cout << ans << '\n';
-  display();
+    for (int tmp = len, i = 0; i < 37; tmp += inc, i++) {
+      cerr << "Array Size: " << tmp << '\n';
+      double c = 0.0;
+      for (int trial = 0; trial < 5; trial++) {
+        build(tmp);
+        c += hybrid_sort(0, ssize(a) - 1, 50);
+      }
+      labels.push_back(to_string(tmp));
+      comparisons.push_back(to_string(c / 5.0));
+    }
+
+    ofstream output("part_i_" + start_size + "_" + end_size + ".txt");
+
+    auto store = [&](vector<string> &v) -> void {
+      for (int i = 0; i < ssize(v); i++) {
+        output << v[i];
+        if (i != ssize(v) - 1) {
+          output << ", ";
+        }
+      }
+    };
+
+    store(labels);
+    output << '\n';
+    store(comparisons);
+
+    output.close();
+  } */
+
+  // NOTE: <<- Part (i): fix `n` at 10,000 ->>
+
+  /* vector<string> labels{ "Threshold" }, comparisons{ "Hybrid Sort" };
+
+  ofstream output("part_ii.txt");
+
+  for (int s = 10; s <= 1'000; s += 10) {
+    double c = 0.0;
+    for (int trail = 0; trail < 5; trail++) {
+      build(10'000);
+      c += hybrid_sort(0, ssize(a) - 1, s);
+    }
+    labels.push_back(to_string(s));
+    comparisons.push_back(to_string(c / 5.0));
+  }
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(comparisons);
+
+  output.close(); */
+
+  // NOTE: <<- Part (iii): vary both `s` and `n` ->>
+
+  /* vector<string> labels{ "Threshold" };
+  vector<int> ns{ 250'000, 500'000, 750'000, 1'000'000 };
+  vector comparisons(ssize(ns), vector<string>());
+
+  ofstream output("part_iii.txt");
+
+  for (int s = 1; s <= 50; s++) {
+    for (int i = 0; auto n : ns) {
+      if (empty(comparisons[i])) comparisons[i] = { "n = " + to_string(n) };
+      double c = 0.0;
+      for (int trial = 0; trial < 5; trial++) {
+        build(n);
+        c += hybrid_sort(0, ssize(a) - 1, s);
+      }
+      comparisons[i++].push_back(to_string(c / 5.0));
+    }
+    labels.push_back(to_string(s));
+  }
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  for (const auto &v : comparisons) {
+    output << '\n';
+    vector<string> _ = v;
+    store(_);
+  } */
+
+  // NOTE: <<- Part (iii): vary both `s` and `n` using RUNTIME ->>
+
+  /* vector<string> labels{ "Threshold" };
+  vector<int> ns{ 250'000, 500'000, 750'000, 1'000'000 };
+  vector comparisons(ssize(ns), vector<string>());
+
+  Timer timer;
+
+  ofstream output("part_iii_runtime.txt");
+
+  for (int s = 0; s <= 250; s += 5) {
+    for (int i = 0; auto n : ns) {
+      if (empty(comparisons[i])) comparisons[i] = { "n = " + to_string(n) };
+      double c = 0.0;
+      for (int trial = 0; trial < 5; trial++) {
+        timer.reset();
+        build(n);
+        hybrid_sort(0, ssize(a) - 1, s);
+        c += timer.getElapsed();
+      }
+      comparisons[i++].push_back(to_string(c / 5.0));
+    }
+    labels.push_back(to_string(s));
+  }
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  for (const auto &v : comparisons) {
+    output << '\n';
+    vector<string> _ = v;
+    store(_);
+  } */
+
+  // NOTE: <<- Part (d): compare with Merge Sort ->>
+
+  vector<string> labels, cmp_hybrid, cmp_merge;
+
+  Timer timer;
+
+  for (int len = 1'000, inc = 250; len <= 100'000; len *= 10, inc = len / 4) {
+    string start_size = to_string(len), end_size = to_string(10 * len);
+    cmp_hybrid = { "Hybrid Sort" };
+    cmp_merge  = { "Merge Sort" };
+    labels     = { "Array Size" };
+
+    for (int tmp = len, i = 0; i < 37; tmp += inc, i++) {
+      cerr << "Array Size: " << tmp << '\n';
+      double c_hybrid = 0.0, c_merge = 0.0;
+      for (int trial = 0; trial < 5; trial++) {
+        build(tmp);
+
+        timer.reset();
+        hybrid_sort(0, ssize(a) - 1, 30);
+        c_hybrid += timer.getElapsed();
+
+        timer.reset();
+        merge_sort(0, ssize(a) - 1);
+        c_merge += timer.getElapsed();
+      }
+      labels.push_back(to_string(tmp));
+      cmp_hybrid.push_back(to_string(c_hybrid / 5.0));
+      cmp_merge.push_back(to_string(c_merge / 5.0));
+    }
+
+    ofstream output("part_d_" + start_size + "_" + end_size + ".txt");
+
+    auto store = [&](vector<string> &v) -> void {
+      for (int i = 0; i < ssize(v); i++) {
+        output << v[i];
+        if (i != ssize(v) - 1) {
+          output << ", ";
+        }
+      }
+    };
+
+    store(labels);
+    output << '\n';
+    store(cmp_hybrid);
+    output << '\n';
+    store(cmp_merge);
+
+    output.close();
+  }
 
   return 0;
 }

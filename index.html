@@ -62,7 +62,7 @@
                 }
                 </script>
               </code>
-            </pre>
+          </pre>
         </section>
 
         <section data-auto-animate>
@@ -268,10 +268,454 @@
         <section><h2>Time Complexity Analysis</h2></section>
 
         <section>
-          Let's begin with a theoretical analysis of the time complexity.
+          <p>Let's begin with a theoretical analysis.</p>
+        </section>
+
+        <section>
+          <h2>Part (i)</h2>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Next, let's fix the value of <b>s</b> at <b>50</b> and observe how
+            the number of key comparisons changes with <b>n</b>.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_1000_10000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <p>For each <b>n</b>, we take the mean of <i>five</i> samples.</p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Next, let's fix the value of <b>s</b> at <b>50</b> and observe how
+            the number of key comparisons changes with <b>n</b>.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_10000_100000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <p>For each <b>n</b>, we take the mean of <i>five</i> samples.</p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Next, let's fix the value of <b>s</b> at <b>50</b> and observe how
+            the number of key comparisons changes with <b>n</b>.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_100000_1000000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <p>For each <b>n</b>, we take the mean of <i>five</i> samples.</p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Next, let's fix the value of <b>s</b> at <b>50</b> and observe how
+            the number of key comparisons changes with <b>n</b>.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_1000000_10000000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <p>For each <b>n</b>, we take the mean of <i>five</i> samples.</p>
+        </section>
+
+        <section>
+          <h2>Part (ii)</h2>
+        </section>
+
+        <section>
+          <p>
+            Instead of varying <b>n</b>, let us now fix <b>n</b> at
+            <b>10,000</b> and vary <b>s</b>.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_ii.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Threshold Size (s)", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <p>For each <b>s</b>, we take the mean of <i>five</i> samples.</p>
+        </section>
+
+        <section data-auto-animate="">
+          <blockquote data-id="blockquote-animation">
+            Intuitively, it appears that the <i>lower</i> the threshold
+            <b>s</b>, the better the performance.
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <blockquote data-id="blockquote-animation">
+            Intuitively, it appears that the <i>lower</i> the threshold
+            <b>s</b>, the better the performance.
+          </blockquote>
+          <br />
+          <p>
+            As <b>s</b> increases, we are no longer leveraging the
+            divide-and-conquer principle of Merge Sort and instead relying more
+            heavily on Insertion Sort.
+          </p>
+        </section>
+
+        <section>
+          <h2>Part (iii)</h2>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Knowing that the optimal <b>s</b> in the earlier example lies
+            between <b>10</b> to <b>50</b>, we'll focus our search within this
+            range over a variety of array sizes. Like before, we'll use the mean
+            of five samples.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Knowing that the optimal <b>s</b> in the earlier example lies
+            between <b>1</b> to <b>50</b>, we'll focus our search within this
+            range over a variety of array sizes. Like before, we'll use the mean
+            of five samples.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_iii.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Threshold Size (s)", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            It appears that from the POV of key comparisons, the lower the
+            threshold size, the better the performance, i.e., we should just
+            stick to Merge Sort instead.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            It appears that from the POV of key comparisons, the lower the
+            threshold size, the better the performance, i.e., we should just
+            stick to Merge Sort instead.
+          </p>
+          <blockquote>What if we measured <i>runtime</i> instead?</blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            It appears that from the POV of key comparisons, the lower the
+            threshold size, the better the performance, i.e., we should just
+            stick to Merge Sort instead.
+          </p>
+          <blockquote>What if we measured <i>runtime</i> instead?</blockquote>
+          <pre data-id="code-animation">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                struct Timer {
+                  using Clock        = std::chrono::steady_clock;
+                  using Milliseconds = std::chrono::milliseconds;
+                  void reset() { t = Clock::now(); }
+                  double getElapsed() {
+                    auto elapsed = Clock::now() - t;
+                    return std::chrono::duration_cast<Milliseconds>(elapsed).count();
+                  }
+
+                private:
+                  std::chrono::time_point<Clock> t{ Clock::now() };
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section>
+          <p>
+            As evidenced by the chart below, the optimal threshold size lies at
+            around <b>30</b>. Therefore, we'll use this value for our subsequent
+            comparison.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_iii_runtime.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Threshold Size (s)", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
         </section>
 
         <section><h2>Comparison With Merge Sort</h2></section>
+
+        <section data-auto-animate>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_d_1000_10000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <blockquote>
+            At small array sizes, Hybrid Sort is sometimes <b>twice</b> as fast
+            as Insertion Sort.
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_d_10000_100000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <blockquote>
+            At medium array sizes, Hybrid Sort offers an approximately
+            <b>20%</b> speedup.
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_d_100000_1000000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <blockquote>
+            At large array sizes, Hybrid Sort is slightly (<b>15%</b>) faster
+            than Merge Sort.
+          </blockquote>
+        </section>
+
+        <section>
+          <h1>Thank You</h1>
+        </section>
       </div>
     </div>
 
@@ -281,10 +725,18 @@
     <script src="plugin/markdown/markdown.js"></script>
     <script src="plugin/highlight/highlight.js"></script>
 
+    <!-- Chart Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/chart/plugin.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"></script>
+
     <script>
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
       // - https://revealjs.com/config/
+
+      Chart.defaults.font.family = "Maple Mono";
+      Chart.defaults.font.size = 16;
+
       Reveal.initialize({
         hash: true,
 
@@ -294,11 +746,40 @@
         maxScale: 1.0, // PERF: resolves blurry font issue
         minScale: 0.2,
 
+        chart: {
+          defaults: {
+            color: "#121212",
+            scale: {
+              grid: {
+                color: "#424242",
+              },
+            },
+          },
+          line: {
+            borderColor: ["#447754d1", "#824232d1", "#826222d1", "#6687b1"],
+            borderDash: [
+              [0, 0],
+              [0, 0],
+            ],
+          },
+          scatter: {
+            borderColor: ["#447754d1", "#824232d1", "#826222d1", "#6687b1"],
+            backgroundColor: ["#447754d1", "#824232d1", "#826222d1", "#6687b1"],
+            borderDash: [
+              [0, 0],
+              [0, 0],
+              [0, 0],
+            ],
+            pointRadius: [1, 1, 1],
+          },
+        },
+
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [
           RevealMarkdown,
           RevealHighlight,
           RevealNotes,
+          RevealChart,
           RevealMath.KaTeX,
         ],
       });
