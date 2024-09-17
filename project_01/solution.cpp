@@ -86,14 +86,17 @@ int main() {
     ranges::generate(a, [&]() { return dist(gen); });
   };
 
+  auto f = [](double n, double s) { return n * s + n * log2(n / s); };
+
   // NOTE: <<- Part (i): fix `s` at 50 ->>
 
-  /* vector<string> labels, comparisons;
+  /* vector<string> labels, comparisons, theoretical;
 
   for (int len = 1'000, inc = 250; len <= 1'000'000; len *= 10, inc = len / 4) {
     string start_size = to_string(len), end_size = to_string(10 * len);
-    comparisons = { "Hybrid Sort" };
+    comparisons = { "Empirical" };
     labels      = { "Array Size" };
+    theoretical = { "Theoretical" };
 
     for (int tmp = len, i = 0; i < 37; tmp += inc, i++) {
       cerr << "Array Size: " << tmp << '\n';
@@ -104,6 +107,7 @@ int main() {
       }
       labels.push_back(to_string(tmp));
       comparisons.push_back(to_string(c / 5.0));
+      theoretical.push_back(to_string(f(tmp, 50)));
     }
 
     ofstream output("part_i_" + start_size + "_" + end_size + ".txt");
@@ -120,13 +124,16 @@ int main() {
     store(labels);
     output << '\n';
     store(comparisons);
+    output << '\n';
+    store(theoretical);
 
     output.close();
   } */
 
-  // NOTE: <<- Part (i): fix `n` at 10,000 ->>
+  // NOTE: <<- Part (ii): fix `n` at 10,000 ->>
 
-  /* vector<string> labels{ "Threshold" }, comparisons{ "Hybrid Sort" };
+  vector<string> labels{ "Threshold" };
+  vector<string> comparisons{ "Empirical" }, theoretical{ "Theoretical" };
 
   ofstream output("part_ii.txt");
 
@@ -138,6 +145,7 @@ int main() {
     }
     labels.push_back(to_string(s));
     comparisons.push_back(to_string(c / 5.0));
+    theoretical.push_back(to_string(f(10'000, s)));
   }
 
   auto store = [&](vector<string> &v) -> void {
@@ -152,8 +160,10 @@ int main() {
   store(labels);
   output << '\n';
   store(comparisons);
+  output << '\n';
+  store(theoretical);
 
-  output.close(); */
+  output.close();
 
   // NOTE: <<- Part (iii): vary both `s` and `n` ->>
 
@@ -235,7 +245,7 @@ int main() {
 
   // NOTE: <<- Part (d): compare with Merge Sort ->>
 
-  vector<string> labels, cmp_hybrid, cmp_merge;
+  /* vector<string> labels, cmp_hybrid, cmp_merge;
 
   Timer timer;
 
@@ -282,7 +292,7 @@ int main() {
     store(cmp_merge);
 
     output.close();
-  }
+  } */
 
   return 0;
 }
