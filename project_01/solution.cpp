@@ -214,7 +214,7 @@ int main() {
 
   // NOTE: <<- Part (iii): vary both `s` and `n` using RUNTIME ->>
 
-  vector<string> labels{ "Threshold" };
+  /* vector<string> labels{ "Threshold" };
   vector<int> ns{ 250'000, 500'000, 750'000, 1'000'000 };
   vector comparisons(ssize(ns), vector<string>());
   map<int, pair<int, double>> mp;
@@ -260,9 +260,54 @@ int main() {
     output << '\n';
     vector<string> _ = v;
     store(_);
+  } */
+
+  // NOTE: <<- Part (d): compare with Merge Sort (key comparisons) ->>
+
+  vector<string> labels, cmp_hybrid, cmp_merge;
+
+  Timer timer;
+
+  for (int len = 1'000, inc = 250; len <= 100'000; len *= 10, inc = len / 4) {
+    string start_size = to_string(len), end_size = to_string(10 * len);
+    cmp_hybrid = { "Hybrid Sort" };
+    cmp_merge  = { "Merge Sort" };
+    labels     = { "Array Size" };
+
+    for (int tmp = len, i = 0; i < 37; tmp += inc, i++) {
+      cerr << "Array Size: " << tmp << '\n';
+      int c_hybrid = 0, c_merge = 0;
+      for (int trial = 0; trial < 5; trial++) {
+        build(tmp);
+        c_hybrid += hybrid_sort(0, ssize(a) - 1, 40);
+        c_merge += merge_sort(0, ssize(a) - 1);
+      }
+      labels.push_back(to_string(tmp));
+      cmp_hybrid.push_back(to_string(c_hybrid / 5));
+      cmp_merge.push_back(to_string(c_merge / 5));
+    }
+
+    ofstream output("part_d_cmp_" + start_size + "_" + end_size + ".txt");
+
+    auto store = [&](vector<string> &v) -> void {
+      for (int i = 0; i < ssize(v); i++) {
+        output << v[i];
+        if (i != ssize(v) - 1) {
+          output << ", ";
+        }
+      }
+    };
+
+    store(labels);
+    output << '\n';
+    store(cmp_hybrid);
+    output << '\n';
+    store(cmp_merge);
+
+    output.close();
   }
 
-  // NOTE: <<- Part (d): compare with Merge Sort ->>
+  // NOTE: <<- Part (d): compare with Merge Sort (runtime) ->>
 
   /* vector<string> labels, cmp_hybrid, cmp_merge;
 
@@ -281,7 +326,7 @@ int main() {
         build(tmp);
 
         timer.reset();
-        hybrid_sort(0, ssize(a) - 1, 30);
+        hybrid_sort(0, ssize(a) - 1, 40);
         c_hybrid += timer.getElapsed();
 
         timer.reset();
