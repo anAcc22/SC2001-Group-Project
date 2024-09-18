@@ -983,6 +983,279 @@
         </section>
 
         <section>
+          <h2>Interlude: Closing the Gap</h2>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Although we have established the time complexities earlier, let's
+            find a better estimate for the average case.
+          </p>
+        </section>
+
+        <section data-auto-animate="">
+          <p>
+            Although we have established the time complexities earlier, let's
+            find a better estimate for the average case.
+          </p>
+          <blockquote data-id="blockquote-animation">
+            Interestingly, for large $n$ and a randomly ordered array, merge
+            sort's expected number of comparisons approaches $\alpha n$ less
+            than the worse case (Jayalakshmi, 2007), where \[\alpha = -1 +
+            \sum_{k=0}^{\infty} \frac{1}{2^k + 1} \approx 0.2645.\]
+          </blockquote>
+        </section>
+
+        <section data-auto-animate="">
+          <p>
+            Although we have established the time complexities earlier, let's
+            find a better estimate for the average case.
+          </p>
+          <blockquote data-id="blockquote-animation">
+            Interestingly, for large $n$ and a randomly ordered array, merge
+            sort's expected number of comparisons approaches $\alpha n$ less
+            than the worst case (Jayalakshmi, 2007), where \[\alpha = -1 +
+            \sum_{k=0}^{\infty} \frac{1}{2^k + 1} \approx 0.2645.\]
+          </blockquote>
+          <p>
+            In addition, the number of merge layers for some arbitrary $n$ is \[
+            h = \left\lfloor \log_2(\left\lceil \frac{n}{S} \right\rceil - 1)
+            \right\rfloor + 1. \]
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <blockquote data-id="blockquote-animation-new">
+            Regarding insertion sort, the average case produces \[
+            \frac{(b-1)b}{4} + b - H_b \] comparisons, where $H_b =
+            \sum_{i=1}^{b} \frac{1}{i}$, and $H_b \approx \ln b$ when $b \to
+            \infty$ (Georgy, 2016).
+          </blockquote>
+        </section>
+
+        <section data-auto-animate="">
+          <blockquote data-id="blockquote-animation-new">
+            Regarding insertion sort, the average case produces \[
+            \frac{(b-1)b}{4} + b - H_b \] comparisons, where $H_b =
+            \sum_{i=1}^{b} \frac{1}{i}$, and $H_b \approx \ln b$ when $b \to
+            \infty$ (Georgy, 2016).
+          </blockquote>
+          <p>
+            Observe that $b$ is <b>not</b> necessarily $S$. Instead, it will be
+            <i>at least</i> $\left\lfloor \frac{n}{2^h} \right\rfloor$.
+            Therefore, our revised estimate is \[ \left[ \frac{(b-1)n}{4} + n -
+            n \cdot \frac{\ln b}{b} \right] + 0.7355 nh, \] where $b =
+            \left\lfloor \frac{n}{2^h} \right\rfloor$.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Certain tricks may be used in C++ to make implementation easier.
+          </p>
+          <pre data-id="code-animation">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto ceil_div = [](int p, int q) { return (p + q - 1) / q; };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Certain tricks may be used in C++ to make implementation easier.
+          </p>
+          <pre data-id="code-animation">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto ceil_div = [](int p, int q) { return (p + q - 1) / q; };
+
+                auto f = [&](int n, int s) {
+                  int h    = __lg(ceil_div(n, s) - 1) + 1;
+                  double b = n >> h;
+                  return ((b - 1) * n / 4.0) + n - n * (log(b) / b) + 0.7355 * n * h;
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Reexamining part (i) with a fixed <b>S</b> of <b>50</b>, we yield
+            the following graph.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_rev_1000_10000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Reexamining part (i) with a fixed <b>S</b> of <b>50</b>, we yield
+            the following graph.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_rev_10000_100000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Reexamining part (i) with a fixed <b>S</b> of <b>50</b>, we yield
+            the following graph.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_rev_100000_1000000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Reexamining part (i) with a fixed <b>S</b> of <b>50</b>, we yield
+            the following graph.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_i_rev_1000000_10000000.txt"
+              style="height: 45vh"
+              data-id="animate-chart"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          <p>
+            Reexamining part (ii), with a fixed <b>n</b> of <b>10,000</b>, we
+            yield the following graph.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/part_ii_rev.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Key Comparisons", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Threshold Size (s)", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
           <h2>Part (iii)</h2>
         </section>
 
@@ -1223,6 +1496,20 @@
 
         <section>
           <h1>Thank You</h1>
+        </section>
+
+        <section>
+          <h3>References</h3>
+          <ul style="font-size: 26px">
+            <li>
+              Gimel’farb, G. (2016). Insertion sort: Analysis of complexity.
+              https://www.cs.auckland.ac.nz/compsci220s1c/lectures/2016S1C/CS220-Lecture08.pdf
+            </li>
+            <li>
+              Jayalakshmi, N. (2007). Data structure using C++. Firewall Media.
+              ISBN 978-81-318-0020-1. OCLC 849900742
+            </li>
+          </ul>
         </section>
       </div>
     </div>

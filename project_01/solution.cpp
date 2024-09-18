@@ -86,11 +86,21 @@ int main() {
     ranges::generate(a, [&]() { return dist(gen); });
   };
 
-  auto f = [](double n, double s) { return n * s + n * log2(n / s); };
+  auto ceil_div = [](int p, int q) { return (p + q - 1) / q; };
+
+  // auto f = [](double n, double s) { // NOTE: naive variant
+  //   return n * s + n * log2(n / s);
+  // };
+
+  auto f = [&](int n, int s) {
+    int h    = __lg(ceil_div(n, s) - 1) + 1;
+    double b = n >> h;
+    return ((b - 1) * n / 4.0) + n - n * (log(b) / b) + 0.7355 * n * h;
+  };
 
   // NOTE: <<- Part (i): fix `s` at 50 ->>
 
-  /* vector<string> labels, comparisons, theoretical;
+  vector<string> labels, comparisons, theoretical;
 
   for (int len = 1'000, inc = 250; len <= 1'000'000; len *= 10, inc = len / 4) {
     string start_size = to_string(len), end_size = to_string(10 * len);
@@ -110,7 +120,7 @@ int main() {
       theoretical.push_back(to_string(f(tmp, 50)));
     }
 
-    ofstream output("part_i_" + start_size + "_" + end_size + ".txt");
+    ofstream output("part_i_rev_" + start_size + "_" + end_size + ".txt");
 
     auto store = [&](vector<string> &v) -> void {
       for (int i = 0; i < ssize(v); i++) {
@@ -128,14 +138,14 @@ int main() {
     store(theoretical);
 
     output.close();
-  } */
+  }
 
   // NOTE: <<- Part (ii): fix `n` at 10,000 ->>
 
-  vector<string> labels{ "Threshold" };
+  /* vector<string> labels{ "Threshold" };
   vector<string> comparisons{ "Empirical" }, theoretical{ "Theoretical" };
 
-  ofstream output("part_ii.txt");
+  ofstream output("part_ii_rev.txt");
 
   for (int s = 10; s <= 1'000; s += 10) {
     double c = 0.0;
@@ -163,7 +173,7 @@ int main() {
   output << '\n';
   store(theoretical);
 
-  output.close();
+  output.close(); */
 
   // NOTE: <<- Part (iii): vary both `s` and `n` ->>
 
