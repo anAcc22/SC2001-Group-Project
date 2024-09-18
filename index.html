@@ -1601,6 +1601,85 @@
           </div>
         </section>
 
+        <section><h2>Runtime Quirks</h2></section>
+
+        <section>
+          <p>
+            Interestingly, at large powers of two, <b>cache conflicts</b> are
+            likely to occur, leading to seemingly strange peaks at such array
+            sizes.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_01/extra_cache.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "Array Size", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            The way your code is compiled also affects the runtime. Consider the
+            following snippet:
+          </p>
+          <pre data-id="code-animation">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                #pragma GCC optimize("Ofast,unroll-loops")
+                </script>
+              </code>
+          </pre>
+          <p>
+            Putting this at the top of the c++ file led to a decrease from 6.8ms
+            to 5.5ms (<b>n</b> = <b>10,000,000</b>).
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            The way your code is compiled also affects the runtime. Consider the
+            following snippet:
+          </p>
+          <pre data-id="code-animation">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                #pragma GCC optimize("Ofast,unroll-loops")
+                </script>
+              </code>
+          </pre>
+          <p>
+            Putting this at the top of the c++ file led to a decrease from 6.8ms
+            to 5.5ms (<b>n</b> = <b>10,000,000</b>).
+          </p>
+          <blockquote>
+            By turning on all optimizations and unrolling loops as aggressively
+            as possible, the compiled program runs even faster. Unfortunately,
+            it assumes that you are using GCC and this isn't always guaranteed
+            to work...
+          </blockquote>
+        </section>
+
         <section>
           <h1>Thank You</h1>
         </section>

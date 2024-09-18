@@ -264,7 +264,7 @@ int main() {
 
   // NOTE: <<- Part (d): compare with Merge Sort (key comparisons) ->>
 
-  vector<string> labels, cmp_hybrid, cmp_merge;
+  /* vector<string> labels, cmp_hybrid, cmp_merge;
 
   Timer timer;
 
@@ -305,7 +305,7 @@ int main() {
     store(cmp_merge);
 
     output.close();
-  }
+  } */
 
   // NOTE: <<- Part (d): compare with Merge Sort (runtime) ->>
 
@@ -357,6 +357,41 @@ int main() {
 
     output.close();
   } */
+
+  // NOTE: <<- Cache Conflicts (?) ->>
+
+  /* vector<string> labels{ "Array Size" }, cmp{ "Hybrid Sort" };
+
+  Timer timer;
+
+  for (int len = (1<<24)-3; len <= (1<<24)+3; len++) {
+    double c = 0.0;
+    for (int trial = 0; trial < 5; trial++) {
+      build(len);
+      timer.reset();
+      hybrid_sort(0, ssize(a) - 1, 40);
+      c += timer.getElapsed();
+    }
+    labels.push_back(to_string(len));
+    cmp.push_back(to_string(c / 5.0));
+  }
+
+  ofstream output("extra_cache.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(cmp);
+
+  output.close(); */
 
   return 0;
 }
