@@ -100,7 +100,7 @@ int main() {
 
   // NOTE: <<- Part (i): fix `s` at 50 ->>
 
-  vector<string> labels, comparisons, theoretical;
+  /* vector<string> labels, comparisons, theoretical;
 
   for (int len = 1'000, inc = 250; len <= 1'000'000; len *= 10, inc = len / 4) {
     string start_size = to_string(len), end_size = to_string(10 * len);
@@ -138,7 +138,7 @@ int main() {
     store(theoretical);
 
     output.close();
-  }
+  } */
 
   // NOTE: <<- Part (ii): fix `n` at 10,000 ->>
 
@@ -183,7 +183,7 @@ int main() {
 
   ofstream output("part_iii.txt");
 
-  for (int s = 1; s <= 50; s++) {
+  for (int s = 0; s <= 50; s++) {
     for (int i = 0; auto n : ns) {
       if (empty(comparisons[i])) comparisons[i] = { "n = " + to_string(n) };
       double c = 0.0;
@@ -214,9 +214,10 @@ int main() {
 
   // NOTE: <<- Part (iii): vary both `s` and `n` using RUNTIME ->>
 
-  /* vector<string> labels{ "Threshold" };
+  vector<string> labels{ "Threshold" };
   vector<int> ns{ 250'000, 500'000, 750'000, 1'000'000 };
   vector comparisons(ssize(ns), vector<string>());
+  map<int, pair<int, double>> mp;
 
   Timer timer;
 
@@ -232,10 +233,18 @@ int main() {
         hybrid_sort(0, ssize(a) - 1, s);
         c += timer.getElapsed();
       }
-      comparisons[i++].push_back(to_string(c / 5.0));
+      c /= 5.0;
+      comparisons[i++].push_back(to_string(c));
+      if (!mp.contains(n) || c < mp[n].second) mp[n] = { s, c };
     }
     labels.push_back(to_string(s));
   }
+
+  int best_s_sum = 0;
+
+  for (auto &[k, v] : mp) best_s_sum += v.first;
+
+  cerr << "Best `S`: " << best_s_sum / ssize(mp) << '\n';
 
   auto store = [&](vector<string> &v) -> void {
     for (int i = 0; i < ssize(v); i++) {
@@ -251,7 +260,7 @@ int main() {
     output << '\n';
     vector<string> _ = v;
     store(_);
-  } */
+  }
 
   // NOTE: <<- Part (d): compare with Merge Sort ->>
 
