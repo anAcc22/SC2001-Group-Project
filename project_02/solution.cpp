@@ -1,37 +1,5 @@
 #include <bits/stdc++.h>
 
-template <typename T, typename U>
-std::ostream &operator<<(std::ostream &out, const std::pair<T, U> &p) {
-  out << "[ " << p.first << ' ' << p.second << " ]";
-  return out;
-}
-
-template <typename... Ts>
-std::ostream &operator<<(std::ostream &out, const std::tuple<Ts...> &t) {
-  out << "[ ";
-  std::apply([&out](auto &&...args) { ((out << args << " "), ...); }, t);
-  out << ']';
-  return out;
-}
-
-template <typename ValueType, size_t SIZE>
-std::ostream &
-operator<<(std::ostream &out, const std::array<ValueType, SIZE> &c) {
-  out << "[ ";
-  for (const auto &v : c) out << v << ' ';
-  out << ']';
-  return out;
-}
-
-template <
-    template <typename, typename...> typename ContainerType, typename ValueType,
-    typename... Args>
-void display(const ContainerType<ValueType, Args...> &c) {
-  std::cout << "❯ { ";
-  for (const auto &v : c) std::cout << v << " ";
-  std::cout << "}\n";
-}
-
 using namespace std;
 namespace rgs = ranges;
 
@@ -39,25 +7,76 @@ using ll  = long long;
 using ill = pair<int, ll>;
 using lli = pair<ll, int>;
 
-int n, m;
-constexpr ll INF = 1'000'000'000'000'000'000LL;
-
 mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
 uniform_int_distribution w_dist(1, 1'000'000'000);
 
+int n, m;
+constexpr ll INF = 1'000'000'000'000'000'000LL;
+
 vector<vector<ll>> adm;
 vector<vector<ill>> adj;
+
+class SegTree {
+  int n;
+  vector<lli> a, tree;
+  void build(int i, int l, int r) {
+    if (l == r) tree[i] = a[l];
+    else {
+      int m = (l + r) / 2;
+      build(2 * i, l, m);
+      build(2 * i + 1, m + 1, r);
+      tree[i] = conquer(tree[2 * i], tree[2 * i + 1]);
+    }
+  }
+  void update(int i, int tl, int tr, int pos, lli val) {
+    if (tl == tr) tree[i] = val;
+    else {
+      int tm = (tl + tr) / 2;
+      if (pos <= tm) update(2 * i, tl, tm, pos, val);
+      else update(2 * i + 1, tm + 1, tr, pos, val);
+      tree[i] = conquer(tree[2 * i], tree[2 * i + 1]);
+    }
+  }
+  lli query(int i, int tl, int tr, int l, int r) {
+    if (l > r) return { INF, -1 };
+    if (l == tl && r == tr) return tree[i];
+    int tm = (tl + tr) / 2;
+    return conquer(
+        query(2 * i, tl, tm, l, min(r, tm)),
+        query(2 * i + 1, tm + 1, tr, max(l, tm + 1), r));
+  }
+
+public:
+  SegTree(vector<lli> &a)
+      : a(a) {
+    n = ssize(a);
+    tree.assign(4 * n, {});
+    build(1, 0, n - 1);
+  }
+  lli conquer(lli x, lli y) { return min(x, y); }
+  void update(int pos, lli val) { update(1, 0, n - 1, pos, val); }
+  lli query(int l, int r) { return query(1, 0, n - 1, l, r); }
+};
 
 int main() {
   cin.tie(nullptr)->sync_with_stdio(false);
 
   vector<ll> d, s;
 
-  auto gen_graph = [&](int n, int m) -> void {
+  cin >> n >> m;
+
+  adj.assign(n, vector<ill>());
+
+  for (int i = 0, u, v, w; i < m; i++) {
+    cin >> u >> v >> w, u--, v--;
+    adj[u].emplace_back(v, w);
+  }
+
+  /* auto gen_graph = [&](int n, int m, bool gen_adm, bool gen_adj) -> void {
     assert(m <= n * n);
 
-    adm.assign(n, vector<ll>(n, INF));
-    adj.assign(n, vector<ill>());
+    if (gen_adm) adm.assign(n, vector<ll>(n, INF));
+    if (gen_adj) adj.assign(n, vector<ill>());
 
     vector<int> ed(m), ws(m), rg(n * n);
 
@@ -66,11 +85,11 @@ int main() {
 
     for (int i = 0; i < m; i++) {
       int u = ed[i] / n, v = ed[i] % n;
-      ws[i]     = w_dist(gen);
-      adm[u][v] = ws[i];
-      adj[u].emplace_back(v, ws[i]);
+      ws[i] = w_dist(gen);
+      if (gen_adm) adm[u][v] = ws[i];
+      if (gen_adj) adj[u].emplace_back(v, ws[i]);
     }
-  };
+  }; */
 
   auto display_adm = [&]() -> void {
     int n = ssize(adm);
@@ -92,12 +111,6 @@ int main() {
       }
     }
   };
-
-  gen_graph(5, 5);
-
-  display_adm();
-  cout << '\n';
-  display_adj();
 
   /* NOTE: <<- CSES (Shortest Routes I) ->>
    * Passes 6/23 testcases, produces RTE on the rest.
@@ -177,6 +190,34 @@ int main() {
       }
     }
   };
+
+  /* NOTE: <<- CSES (Shortest Routes I) ->>
+   * Passes 23/23 testcases (AC).
+   */
+  auto imp_b_seg = [&]() -> void {
+    d.assign(n, INF);
+
+    vector<lli> _(n);
+    for (int i = 1; i < n; i++) _[i] = { INF, i };
+    SegTree pq(_);
+
+    d[0] = 0;
+
+    while (pq.query(0, n-1).first != INF) {
+      auto [cur, u] = pq.query(0, n-1);
+      pq.update(u, { INF, u });
+      if (cur != d[u]) continue;
+      for (auto &[v, w] : adj[u]) {
+        if (w == INF || d[u] + w >= d[v]) continue;
+        d[v] = d[u] + w;
+        pq.update(v, { d[v], v });
+      }
+    }
+  };
+
+  imp_b_seg();
+
+  for (int i = 0; i < n; i++) cout << d[i] << " \n"[i == n - 1];
 
   return 0;
 }
