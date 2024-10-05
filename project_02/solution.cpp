@@ -122,7 +122,10 @@ int main() {
   /* NOTE: <<- CSES (Shortest Routes I) ->>
    * Passes 6/23 testcases, produces RTE on the rest.
    */
-  auto imp_a = [&]() -> void {
+
+  auto imp_a = [&]() -> ll {
+    ll ops = 2 * n;
+
     d.assign(n, INF);
     s.assign(n, false);
 
@@ -131,9 +134,10 @@ int main() {
     auto get_min = [&]() -> int {
       int idx = -1;
       ll cur  = INF;
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < n; i++, ops++) {
         if (!s[i] && d[i] < cur) {
           idx = i, cur = d[i];
+          ops += 2;
         }
       }
       return idx;
@@ -144,16 +148,19 @@ int main() {
     while (!is_empty()) {
       int i = get_min();
       s[i]  = true;
-      for (int j = 0; j < n; j++) {
+      for (int j = 0; j < n; j++, ops++) {
         if (i == j || adm[i][j] == INF) continue;
         d[j] = min(d[j], d[i] + adm[i][j]);
       }
     }
+
+    return ops;
   };
 
   /* NOTE: <<- CSES (Shortest Routes I) ->>
    * Passes 23/23 testcases (AC).
    */
+
   auto imp_b_ori = [&]() -> void {
     d.assign(n, INF);
     set<lli> pq;
@@ -180,6 +187,7 @@ int main() {
   /* NOTE: <<- CSES (Shortest Routes I) ->>
    * Passes 15/23 testcases, produces TLE on the rest.
    */
+
   auto imp_b_bad = [&]() -> void {
     d.assign(n, INF);
     priority_queue<lli, vector<lli>, greater<>> pq;
@@ -205,26 +213,35 @@ int main() {
   /* NOTE: <<- CSES (Shortest Routes I) ->>
    * Passes 23/23 testcases (AC).
    */
-  auto imp_b_opt = [&]() -> void {
+
+  auto imp_b_opt = [&]() -> ll {
+    ll ops = n;
     d.assign(n, INF);
     priority_queue<lli, vector<lli>, greater<>> pq;
     d[0] = 0;
     pq.emplace(0, 0);
     while (!empty(pq)) {
       auto [cur, u] = pq.top();
+      ops += log2(ssize(pq));
       pq.pop();
       if (cur != d[u]) continue;
+      ops++;
       for (auto &[v, w] : adj[u]) {
+        ops += 3;
         if (w == INF || d[u] + w >= d[v]) continue;
         d[v] = d[u] + w;
+        ops++;
         pq.emplace(d[v], v);
+        ops += log2(ssize(pq));
       }
     }
+    return ops;
   };
 
   /* NOTE: <<- CSES (Shortest Routes I) ->>
    * Passes 23/23 testcases (AC).
    */
+
   auto imp_b_seg = [&]() -> void {
     d.assign(n, INF);
 
@@ -264,6 +281,367 @@ int main() {
       }
     }
   };
+
+  // NOTE: <<- Part (a) (vary n, m = n²) ->>
+
+  /* vector<string> labels{ "V" };
+  vector<string> empirical{ "Empirical" }, theoretical{ "Theoretical (3V²)" };
+
+  for (int i = 100; i <= 500; i += 20) {
+    ll avg = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, i*i, true, false);
+      avg += imp_a();
+    }
+    labels.push_back(to_string(i));
+    theoretical.push_back(to_string((ll)3 * i * i));
+    empirical.push_back(to_string(avg / trial_cnt));
+  }
+
+  ofstream output("part_i_n.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(theoretical);
+  output << '\n';
+  store(empirical); */
+
+  // NOTE: <<- Part (a) (vary n, m = 500) ->>
+
+  /* vector<string> labels{ "V" };
+  vector<string> empirical{ "Empirical" }, theoretical{ "Theoretical (3V²)" };
+
+  for (int i = 100; i <= 500; i += 20) {
+    ll avg = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, 500, true, false);
+      avg += imp_a();
+    }
+    labels.push_back(to_string(i));
+    theoretical.push_back(to_string((ll)3 * i * i));
+    empirical.push_back(to_string(avg / trial_cnt));
+  }
+
+  ofstream output("part_i_n_m_500.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(theoretical);
+  output << '\n';
+  store(empirical); */
+
+  // NOTE: <<- Part (a) (vary m, n = 500) ->>
+
+  /* vector<string> labels{ "M" };
+  vector<string> empirical{ "Empirical" }, theoretical{ "Theoretical (3V²)" };
+
+  for (int i = 0; i <= 10'000; i += 100) {
+    ll avg = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(500, i, true, false);
+      avg += imp_a();
+    }
+    labels.push_back(to_string(i));
+    theoretical.push_back(to_string((ll)3 * 500 * 500));
+    empirical.push_back(to_string(avg / trial_cnt));
+  }
+
+  ofstream output("part_i_m.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(theoretical);
+  output << '\n';
+  store(empirical); */
+
+  // NOTE: <<- Part (b) (vary n, m = 2'500) ->>
+
+  /* vector<string> labels{ "N" };
+  vector<string> empirical{ "Empirical" },
+      theoretical{ "Theoretical (V + E·log(E))" };
+
+  for (int i = 100; i <= 500; i += 10) {
+    ll avg = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, 2'500, false, true);
+      avg += imp_b_opt();
+    }
+    labels.push_back(to_string(i));
+    theoretical.push_back(to_string(i + (2'500 * log2(2'500))));
+    empirical.push_back(to_string(avg / trial_cnt));
+  }
+
+  ofstream output("part_ii_n.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(theoretical);
+  output << '\n';
+  store(empirical); */
+
+  // NOTE: <<- Part (b) (vary m, n = ?) ->>
+
+  /* vector<string> labels{ "M" };
+  vector<string> empirical{ "Empirical" },
+      theoretical{ "Theoretical (V + E·log(E))" };
+
+  for (int i = 500; i <= 5000; i += 100) {
+    ll avg = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(1'000, i, false, true);
+      avg += imp_b_opt();
+    }
+    labels.push_back(to_string(i));
+    theoretical.push_back(to_string(1'000 + (i * log2(i))));
+    empirical.push_back(to_string(avg / trial_cnt));
+  }
+
+  ofstream output("part_ii_m.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(theoretical);
+  output << '\n';
+  store(empirical); */
+
+  // NOTE: <<- Part (b) (edge case) ->>
+
+  /* vector<string> labels{ "N" };
+  vector<string> empirical{ "Empirical" },
+      theoretical{ "Theoretical (V + E·log(E))" };
+
+  for (int i = 100; i <= 200; i += 5) {
+    ll avg = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_break_b_bad(i);
+      avg += imp_b_opt();
+    }
+    labels.push_back(to_string(i));
+    theoretical.push_back(to_string(i + (i*i * log2(i*i))));
+    empirical.push_back(to_string(avg / trial_cnt));
+  }
+
+  ofstream output("part_ii_edge.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(theoretical);
+  output << '\n';
+  store(empirical); */
+
+  // NOTE: <<- Part (c) (vary n, m = 500) ->>
+
+  /* vector<string> labels{ "N" };
+  vector<string> part_a{ "Part (a)" }, part_b{ "Part (b)" };
+
+  for (int i = 100; i <= 1'000; i += 20) {
+    ll avg_a = 0, avg_b = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, 5'000, true, true);
+
+      timer.reset();
+      imp_a();
+      avg_a += timer.getElapsed();
+
+      timer.reset();
+      imp_b_opt();
+      avg_b += timer.getElapsed();
+    }
+    labels.push_back(to_string(i));
+    part_a.push_back(to_string(avg_a / trial_cnt));
+    part_b.push_back(to_string(avg_b / trial_cnt));
+  }
+
+  ofstream output("part_iii_n.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(part_a);
+  output << '\n';
+  store(part_b); */
+
+  // NOTE: <<- Part (c) (complete graph) ->>
+
+  /* vector<string> labels{ "N" };
+  vector<string> part_a{ "Part (a)" }, part_b{ "Part (b)" };
+
+  for (int i = 100; i <= 1'000; i += 50) {
+    ll avg_a = 0, avg_b = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, i*i, true, true);
+
+      timer.reset();
+      imp_a();
+      avg_a += timer.getElapsed();
+
+      timer.reset();
+      imp_b_opt();
+      avg_b += timer.getElapsed();
+    }
+    labels.push_back(to_string(i));
+    part_a.push_back(to_string(avg_a / trial_cnt));
+    part_b.push_back(to_string(avg_b / trial_cnt));
+  }
+
+  ofstream output("part_iii_complete.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(part_a);
+  output << '\n';
+  store(part_b); */
+
+  // NOTE: <<- Part (c) (segment tree vs binary heap, vary n, m = 500) ->>
+
+  /* vector<string> labels{ "N" };
+  vector<string> segtr{ "Segment Tree" }, bheap{ "Binary Heap" };
+
+  for (int i = 100; i <= 1'000; i += 20) {
+    ll avg_s = 0, avg_b = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, 5'000, false, true);
+
+      timer.reset();
+      imp_b_opt();
+      avg_b += timer.getElapsed();
+
+      timer.reset();
+      imp_b_seg();
+      avg_s += timer.getElapsed();
+    }
+    labels.push_back(to_string(i));
+    segtr.push_back(to_string(avg_s / trial_cnt));
+    bheap.push_back(to_string(avg_b / trial_cnt));
+  }
+
+  ofstream output("part_iii_n_seg.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(segtr);
+  output << '\n';
+  store(bheap); */
+
+  // NOTE: <<- Part (c) (segment tree vs binary heap, complete graph) ->>
+
+  vector<string> labels{ "N" };
+  vector<string> segtr{ "Segment Tree" }, bheap{ "Binary Heap" };
+
+  for (int i = 100; i <= 1'000; i += 100) {
+    ll avg_s = 0, avg_b = 0, trial_cnt = 5;
+    for (int trial = 0; trial < trial_cnt; trial++) {
+      gen_graph(i, i*i, true, true);
+
+      timer.reset();
+      imp_b_opt();
+      avg_b += timer.getElapsed();
+
+      timer.reset();
+      imp_b_seg();
+      avg_s += timer.getElapsed();
+    }
+    labels.push_back(to_string(i));
+    segtr.push_back(to_string(avg_s / trial_cnt));
+    bheap.push_back(to_string(avg_b / trial_cnt));
+  }
+
+  ofstream output("part_iii_complete_seg.txt");
+
+  auto store = [&](vector<string> &v) -> void {
+    for (int i = 0; i < ssize(v); i++) {
+      output << v[i];
+      if (i != ssize(v) - 1) {
+        output << ", ";
+      }
+    }
+  };
+
+  store(labels);
+  output << '\n';
+  store(segtr);
+  output << '\n';
+  store(bheap);
 
   return 0;
 }

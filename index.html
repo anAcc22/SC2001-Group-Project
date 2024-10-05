@@ -156,11 +156,122 @@
               </code>
           </pre>
           <blockquote>
-            Note that each node is visited just <b>once</b> (outer loop). Both
-            retrieval of the next node (<b>get_min</b>), and iterating through
+            Note that each node is visited just <b>once</b> (outer loop).
+            Retrieval of the next node (<b>get_min</b>), checking if the
+            priority queue is empty (<b>is_empty</b>), and iterating through
             every node in the inner loop costs $\mathcal{O}(n)$, producing a
-            total time complexity of $\mathcal{O}(V \cdot (2V)) =
+            total time complexity of $\mathcal{O}(V \cdot (3V)) =
             \mathcal{O}(V^2)$.
+          </blockquote>
+        </section>
+
+        <section>
+          <p>
+            Next, we'll count the number of operations taken on complete graphs
+            (E = V²) of varying V.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_i_n.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Operations", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          <p>What if we set E to 500?</p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_i_n_m_500.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Operations", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          When E is small, relative to V, there is a high chance of producing a
+          <i>disconnected</i> graph, i.e., Dijkstra's would terminate before
+          inspecting every node, resulting in much fewer than V² operations.
+        </section>
+
+        <section>
+          <p>
+            Now, consider varying E from 0 to 10,000 while keeping V constant at
+            500.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_i_m.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Operations", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "E", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <blockquote>
+            Observe that when E is sufficiently large to produce a connected
+            graph with high probability, it no longer affects the time
+            complexity.
           </blockquote>
         </section>
 
@@ -173,7 +284,7 @@
             Observe that the classic Dijkstra described in the lecture
             <i>cannot</i>
             be implemented using a minimizing heap since it requires the
-            deletion of non-minimum items witin the heap...
+            deletion of non-minimum items within the heap...
           </p>
           <blockquote>
             Such an operation would require $\mathcal{O}(V)$ time.
@@ -383,6 +494,109 @@
         </section>
 
         <section>
+          <p>
+            By varying V and keeping E at 2,500, we obtained the following
+            results.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_ii_n.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Operations", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+          <blockquote>
+            In practice, it is rarely the case that every edge improves the
+            distance (worst case assumption).
+          </blockquote>
+        </section>
+
+        <section>
+          <p>Next, we'll fix V at 1,000 and vary E.</p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_ii_m.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Operations", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "E", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          <p>
+            Finally, let's consider the edge case mentioned earlier where every
+            edge leads to an insertion.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_ii_edge.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Operations", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "E", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
           <h2>Part (c)</h2>
         </section>
 
@@ -417,6 +631,75 @@
             $\mathcal{O}(V^2)$. Therefore, in such cases, we'd prefer part (a)'s
             implementation.
           </blockquote>
+        </section>
+
+        <section>
+          <p>
+            First, let's vary V while keeping E at 500. Notice that part (b)'s
+            implementation is generally preferable except for small V where part
+            (a)'s implementation performs slightly better.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_iii_n.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          <p>
+            On complete graphs, it is evident that the logarithmic factor
+            results in part (b)'s implementation being slightly slower.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_iii_complete.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
         </section>
 
         <section>
@@ -504,6 +787,84 @@
             Note that part (a)'s algorithm is still $\mathcal{O}(V^2)$ because
             for every node, we still have to iterate over $\mathcal{O}(V)$ other
             nodes in the inner loop.
+          </blockquote>
+        </section>
+
+        <section>
+          <p>
+            Just as we did earlier, let's vary V while keeping E at 500. Notice
+            that the segment tree offers a tiny speedup as more often than not,
+            $\mathcal{O}(\log_2 (V))$ is better than $\mathcal{O}(\log_2 (E))$.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_iii_n_seg.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          <p>
+            On complete graphs, the difference in logarithmic factors is even
+            more obvious.
+          </p>
+          <div>
+            <canvas
+              data-chart="line"
+              data-chart-src="project_02/part_iii_complete_seg.txt"
+              style="height: 45vh"
+            >
+              <!--
+            {
+              "options": {
+                "animation": false,
+                "scales": {
+                  "y": {
+                    "title": {
+                      "text": "Runtime (ms)", "display": true
+                    }
+                  },
+                  "x": {
+                    "title": {
+                      "text": "V", "display": true
+                    }
+                  }
+                }
+              }
+            }
+            -->
+            </canvas>
+          </div>
+        </section>
+
+        <section>
+          <h1>Thank You</h1>
+          <blockquote>
+            <a href="https://github.com/anAcc22/SC2001_Group_Project">
+              https://github.com/anAcc22/SC2001_Group_Project
+            </a>
           </blockquote>
         </section>
 
