@@ -22,26 +22,503 @@
         <!-- Project 02 -->
         <section>
           <h1>SC2001 Project 02</h1>
-          <p>
-            Dijkstra's Algorithm
-          </p>
+          <p>Dijkstra's Algorithm</p>
           <p><b>Team 5</b></p>
+        </section>
+
+        <section>
+          <h2>Setup</h2>
+        </section>
+
+        <section>
+          <p>
+            To facilitate subsequent implementation, we initialize the following
+            global variables.
+          </p>
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                using ll  = long long;
+                using ill = pair<int, ll>;
+                using lli = pair<ll, int>;
+
+                mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
+                uniform_int_distribution w_dist(1, 1'000'000'000); // [INFO] edge weight
+
+                int n, m;
+                constexpr ll INF = 1'000'000'000'000'000'000LL;
+
+                vector<vector<ll>> adm;
+                vector<vector<ill>> adj;
+
+                vector<ll> d, s;
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section>
+          <p>
+            To generate a random graph, we present the following lambda
+            function.
+          </p>
+          <pre>
+              <code data-line-numbers="2|3-5|6-8|9-14|1-15" data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto gen_graph = [&](int n, int m, bool gen_adm, bool gen_adj) -> void {
+                  assert(m <= n * n);
+                  ::n = n, ::m = m;
+                  if (gen_adm) adm.assign(n, vector<ll>(n, INF));
+                  if (gen_adj) adj.assign(n, vector<ill>());
+                  vector<int> ed(m), ws(m), rg(n * n);
+                  rgs::iota(rg, 0);
+                  rgs::sample(rg, begin(ed), m, gen);
+                  for (int i = 0; i < m; i++) {
+                    int u = ed[i] / n, v = ed[i] % n;
+                    ws[i] = w_dist(gen);
+                    if (gen_adm) adm[u][v] = ws[i];
+                    if (gen_adj) adj[u].emplace_back(v, ws[i]);
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+          <blockquote>
+            To debug/print the graph, we use a few other auxiliary lambda
+            functions.
+          </blockquote>
         </section>
 
         <section>
           <h2>Part (a)</h2>
         </section>
 
+        <section data-auto-animate>
+          <p>
+            Using an array as a priority queue is rather ambiguous phrasing...
+            For now, we'll interpret it as using the distance array directly as
+            the priority queue, i.e., we'll iterate through the array in
+            $\mathcal{O}(V)$ to determine the next <i>unvisited</i> node with
+            the <i>smallest distance</i>.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Using an array as a priority queue is rather ambiguous phrasing...
+            For now, we'll interpret it as using the distance array directly as
+            the priority queue, i.e., we'll iterate through the array in
+            $\mathcal{O}(V)$ to determine the next <i>unvisited</i> node with
+            the <i>smallest distance</i>.
+          </p>
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                  auto get_min = [&]() -> int {
+                    int idx = -1;
+                    ll cur  = INF;
+                    for (int i = 0; i < n; i++) {
+                      if (!s[i] && d[i] < cur) {
+                        idx = i, cur = d[i];
+                      }
+                    }
+                    return idx;
+                  };
+
+                  auto is_empty = [&]() -> int { return get_min() == -1; };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section>
+          <p>
+            Having established the necessary API for using an array as a
+            priority queue, we present the following implementation.
+          </p>
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto imp_a = [&]() -> void {
+                  d.assign(n, INF);
+                  s.assign(n, false);
+                  d[0] = 0;
+                  while (!is_empty()) {
+                    int i = get_min();
+                    s[i]  = true;
+                    for (int j = 0; j < n; j++) {
+                      if (i == j || adm[i][j] == INF) continue;
+                      d[j] = min(d[j], d[i] + adm[i][j]);
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+          <blockquote>
+            Note that each node is visited just <b>once</b> (outer loop). Both
+            retrieval of the next node (<b>get_min</b>), and iterating through
+            every node in the inner loop costs $\mathcal{O}(n)$, producing a
+            total time complexity of $\mathcal{O}(V \cdot (2V)) =
+            \mathcal{O}(V^2)$.
+          </blockquote>
+        </section>
+
+        <section>
+          <h2>Part (b)</h2>
+        </section>
+
+        <section>
+          <p>
+            Observe that the classic Dijkstra described in the lecture
+            <i>cannot</i>
+            be implemented using a minimizing heap since it requires the
+            deletion of non-minimum items witin the heap...
+          </p>
+          <blockquote>
+            Such an operation would require $\mathcal{O}(V)$ time.
+          </blockquote>
+        </section>
+
+        <section>
+          Therefore, some kind of self-balancing tree is usually employed
+          instead.
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto imp_b_ori = [&]() -> void {
+                  d.assign(n, INF);
+                  set<lli> pq;
+                  d[0] = 0, pq.emplace(d[0], 0);
+                  for (int u = 1; u < n; u++) pq.emplace(INF, u);
+                  while (!empty(pq)) {
+                    auto [cur, u] = *begin(pq);
+                    pq.erase(begin(pq));
+                    for (auto &[v, w] : adj[u]) {
+                      if (w == INF || d[u] + w >= d[v]) continue;
+                      pq.erase({ d[v], v });
+                      d[v] = d[u] + w;
+                      pq.emplace(d[v], v);
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section>
+          Fortunately, Dijkstra's algorithm also has a modified form that
+          leverages the <b>lazy deletion</b> technique. This can be done with a
+          minimizing heap, as required in the problem.
+        </section>
+
+        <section>
+          <p>
+            By default, C++'s heap is a maximizing heap; to get a
+            <b>minimizing heap</b>, we can specify the following template
+            parameters.
+          </p>
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                priority_queue<lli, vector<lli>, greater<>> pq;
+                </script>
+              </code>
+          </pre>
+          <blockquote>
+            If you happen to forget the syntax, a common trick is to invert all
+            edge weights/distances...
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <p>First, let's examine a common mistake in the implementation.</p>
+          <pre data-id="animate-code">
+              <code data-line-numbers="2-4|5-6|7-15|1-16" data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto imp_b_bad = [&]() -> void {
+                  d.assign(n, INF);
+                  priority_queue<lli, vector<lli>, greater<>> pq;
+                  d[0] = 0;
+                  pq.emplace(0, 0);
+                  for (int u = 1; u < n; u++) pq.emplace(INF, u);
+                  while (!empty(pq)) {
+                    auto [cur, u] = pq.top();
+                    pq.pop();
+                    for (auto &[v, w] : adj[u]) {
+                      if (w == INF || d[u] + w >= d[v]) continue;
+                      d[v] = d[u] + w;
+                      pq.emplace(d[v], v);
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>First, let's examine a common mistake in the implementation.</p>
+          <pre data-id="animate-code">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto imp_b_bad = [&]() -> void {
+                  d.assign(n, INF);
+                  priority_queue<lli, vector<lli>, greater<>> pq;
+                  d[0] = 0;
+                  pq.emplace(0, 0);
+                  for (int u = 1; u < n; u++) pq.emplace(INF, u);
+                  while (!empty(pq)) {
+                    auto [cur, u] = pq.top();
+                    pq.pop();
+                    for (auto &[v, w] : adj[u]) {
+                      if (w == INF || d[u] + w >= d[v]) continue;
+                      d[v] = d[u] + w;
+                      pq.emplace(d[v], v);
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+          <blockquote>
+            Unfortunately, it passed only 15/23 test cases on CSES's Shortest
+            Routes I, while receiving the TLE verdict on the remaining 8 test
+            cases.
+          </blockquote>
+        </section>
+
+        <section>
+          <p>
+            Notice that in this edge case, the heap can contain up to
+            $\mathcal{O}(V^2)$ elements, each of which take $\mathcal{O}(V)$
+            operations to process, leading to an awful $\mathcal{O}(V^3)$ time
+            complexity.
+          </p>
+
+          <pre data-id="animate-code">
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto gen_break_b_bad = [&](int n) -> void {
+                  // 0: I   n       2*n     3*n     4*n     5*n ...
+                  // 1: n   I     (n-1) 2*(n-1) 3*(n-1) 4*(n-1) ...
+                  // 2: 2*n (n-1)     I   (n-2) 2*(n-1) 3*(n-1) ...
+                  // ...
+                  ::n = n, ::m = (n - 1) * n / 2;
+                  adm.assign(n, vector<ll>(n, INF));
+                  adj.assign(n, vector<ill>());
+                  for (int i = 0; i < n; i++) {
+                    for (int j = i + 1; j < n; j++) {
+                      ll w      = (ll)(n - i) * (j - i);
+                      adm[i][j] = adm[j][i] = w;
+                      adj[i].emplace_back(j, w), adj[j].emplace_back(i, w);
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section>
+          Observe that we don't need to insert all nodes at the start, and we
+          also need to perform a check to guarantee that the current node is the
+          most recently updated one (i.e., minimum distance).
+        </section>
+
+        <section>
+          <p>
+            This implementation receives the AC verdict on CSES's Shortest
+            Routes I.
+          </p>
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto imp_b_opt = [&]() -> void {
+                  d.assign(n, INF);
+                  priority_queue<lli, vector<lli>, greater<>> pq;
+                  d[0] = 0;
+                  pq.emplace(0, 0);
+                  while (!empty(pq)) {
+                    auto [cur, u] = pq.top();
+                    pq.pop();
+                    if (cur != d[u]) continue;
+                    for (auto &[v, w] : adj[u]) {
+                      if (w == INF || d[u] + w >= d[v]) continue;
+                      d[v] = d[u] + w;
+                      pq.emplace(d[v], v);
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Observe that the initial assignment to the distance array costs
+            $\mathcal{O}(V)$ time, and for each possible "improvement" in
+            distance, our heap size is incremented by one. There can be
+            $\mathcal{O}(E)$ such improvements, and each heap operation can take
+            up to $\mathcal{O}(\log_2 E)$ time. Therefore, the total time
+            complexity is $\mathcal{O}(V + E \cdot \log_2 E)$.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Observe that the initial assignment to the distance array costs
+            $\mathcal{O}(V)$ time, and for each possible "improvement" in
+            distance, our heap size is incremented by one. There can be
+            $\mathcal{O}(E)$ such improvements, and each heap operation can take
+            up to $\mathcal{O}(\log_2 E)$ time. Therefore, the total time
+            complexity is $\mathcal{O}(V + E \cdot \log_2 E)$.
+          </p>
+          <blockquote>
+            Since $E \leq V^2$, another valid representation is $\mathcal{O}(V +
+            E \cdot \log_2 V^2)$ = $\mathcal{O}(V + E \cdot \log_2 V)$
+          </blockquote>
+        </section>
+
+        <section>
+          <h2>Part (c)</h2>
+        </section>
+
+        <section>
+          <p>
+            In terms of memory, one of the major drawbacks of adjacency matrices
+            is the $\mathcal{O}(V^2)$ memory that it requires compared to to the
+            $\mathcal{O}(V + E)$ memory for adjacency lists.
+          </p>
+          <p>
+            This is very inefficient for <b>sparse graphs</b> and on many
+            problems where $n \leq 10^5$, you wouldn't even be able to allocate
+            enough memory without getting a segmentation fault.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            In terms of time complexity, $\mathcal{O}(V + E \cdot \log_2 E)$ is
+            better than $\mathcal{O}(V^2)$ under most circumstances.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            In terms of time complexity, $\mathcal{O}(V + E \cdot \log_2 E)$ is
+            better than $\mathcal{O}(V^2)$ under most circumstances.
+          </p>
+          <blockquote>
+            However, when $E \approx V^2$ (e.g., complete graph), the former
+            evolves into $\mathcal{O}(V^2 \cdot \log_2 V)$, which is inferior to
+            $\mathcal{O}(V^2)$. Therefore, in such cases, we'd prefer part (a)'s
+            implementation.
+          </blockquote>
+        </section>
+
+        <section>
+          <p>
+            Finally, we'd like to offer another interpretation of "using an
+            array as a priority queue". Instead of iterating over the distance
+            array in $\mathcal{O}(V)$, let's construct a <b>segment tree</b>
+            instead.
+          </p>
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                class SegTree {
+                  int n;
+                  vector<lli> a, tree;
+                  void build(int i, int l, int r) {
+                    if (l == r) tree[i] = a[l];
+                    else {
+                      int m = (l + r) / 2;
+                      build(2 * i, l, m);
+                      build(2 * i + 1, m + 1, r);
+                      tree[i] = conquer(tree[2 * i], tree[2 * i + 1]);
+                    }
+                  }
+                  void update(int i, int tl, int tr, int pos, lli val) {
+                    if (tl == tr) tree[i] = val;
+                    else {
+                      int tm = (tl + tr) / 2;
+                      if (pos <= tm) update(2 * i, tl, tm, pos, val);
+                      else update(2 * i + 1, tm + 1, tr, pos, val);
+                      tree[i] = conquer(tree[2 * i], tree[2 * i + 1]);
+                    }
+                  }
+                  lli query(int i, int tl, int tr, int l, int r) {
+                    if (l > r) return { INF, -1 };
+                    if (l == tl && r == tr) return tree[i];
+                    int tm = (tl + tr) / 2;
+                    return conquer(
+                        query(2 * i, tl, tm, l, min(r, tm)),
+                        query(2 * i + 1, tm + 1, tr, max(l, tm + 1), r));
+                  }
+
+                public:
+                  SegTree(vector<lli> &a)
+                      : a(a) {
+                    n = ssize(a);
+                    tree.assign(4 * n, {});
+                    build(1, 0, n - 1);
+                  }
+                  lli conquer(lli x, lli y) { return min(x, y); }
+                  void update(int pos, lli val) { update(1, 0, n - 1, pos, val); }
+                  lli query(int l, int r) { return query(1, 0, n - 1, l, r); }
+                };
+                </script>
+              </code>
+          </pre>
+        </section>
+
+        <section>
+          Both point updates and range queries cost $\mathcal{O}(\log_2 V)$, and
+          it could be used as a priority queue in place of a binary heap.
+          <pre>
+              <code data-line-numbers data-trim data-noescape class="cpp">
+                <script type="text/template">
+                auto imp_b_seg = [&]() -> void {
+                  d.assign(n, INF), d[0] = 0;
+                  vector<lli> _(n);
+                  for (int i = 1; i < n; i++) _[i] = { INF, i };
+                  SegTree pq(_);
+                  while (pq.query(0, n - 1).first != INF) {
+                    auto [cur, u] = pq.query(0, n - 1);
+                    pq.update(u, { INF, u });
+                    if (cur != d[u]) continue;
+                    for (auto &[v, w] : adj[u]) {
+                      if (w == INF || d[u] + w >= d[v]) continue;
+                      d[v] = d[u] + w;
+                      pq.update(v, { d[v], v });
+                    }
+                  }
+                };
+                </script>
+              </code>
+          </pre>
+          <blockquote>
+            Note that part (a)'s algorithm is still $\mathcal{O}(V^2)$ because
+            for every node, we still have to iterate over $\mathcal{O}(V)$ other
+            nodes in the inner loop.
+          </blockquote>
+        </section>
+
         <section>
           <h3>References</h3>
           <ul style="font-size: 26px">
             <li>
-              Gimel’farb, G. (2016). Insertion sort: Analysis of complexity.
-              https://www.cs.auckland.ac.nz/compsci220s1c/lectures/2016S1C/CS220-Lecture08.pdf
+              Halim, S., Halim, F., & Effendy, S. (2020). Competitive
+              programming 4: The lower bound of programming contests in the
+              2020s. book 1 Chapter 1-4. Lulu.com.
             </li>
             <li>
-              Jayalakshmi, N. (2007). Data structure using C++. Firewall Media.
-              ISBN 978-81-318-0020-1. OCLC 849900742
+              Segment tree. Segment Tree - Algorithms for Competitive
+              Programming. (2023, December 20).
+              https://cp-algorithms.com/data_structures/segment_tree.html
             </li>
           </ul>
         </section>

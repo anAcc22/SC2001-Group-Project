@@ -16,6 +16,21 @@ constexpr ll INF = 1'000'000'000'000'000'000LL;
 vector<vector<ll>> adm;
 vector<vector<ill>> adj;
 
+vector<ll> d, s;
+
+struct MiniTimer {
+  using Clock        = chrono::steady_clock;
+  using Milliseconds = chrono::milliseconds;
+  void reset() { t = Clock::now(); }
+  void displayElapsed() { cout << "Elapsed (ms): " << getElapsed() << "\n"; }
+  double getElapsed() {
+    return chrono::duration_cast<Milliseconds>(Clock::now() - t).count();
+  }
+
+private:
+  chrono::time_point<Clock> t{ Clock::now() };
+};
+
 class SegTree {
   int n;
   vector<lli> a, tree;
@@ -61,19 +76,11 @@ public:
 int main() {
   cin.tie(nullptr)->sync_with_stdio(false);
 
-  vector<ll> d, s;
+  MiniTimer timer;
 
-  cin >> n >> m;
-
-  adj.assign(n, vector<ill>());
-
-  for (int i = 0, u, v, w; i < m; i++) {
-    cin >> u >> v >> w, u--, v--;
-    adj[u].emplace_back(v, w);
-  }
-
-  /* auto gen_graph = [&](int n, int m, bool gen_adm, bool gen_adj) -> void {
+  auto gen_graph = [&](int n, int m, bool gen_adm, bool gen_adj) -> void {
     assert(m <= n * n);
+    ::n = n, ::m = m;
 
     if (gen_adm) adm.assign(n, vector<ll>(n, INF));
     if (gen_adj) adj.assign(n, vector<ill>());
@@ -89,7 +96,7 @@ int main() {
       if (gen_adm) adm[u][v] = ws[i];
       if (gen_adj) adj[u].emplace_back(v, ws[i]);
     }
-  }; */
+  };
 
   auto display_adm = [&]() -> void {
     int n = ssize(adm);
@@ -145,9 +152,35 @@ int main() {
   };
 
   /* NOTE: <<- CSES (Shortest Routes I) ->>
-   * Passes 15/23 testcases, produces TLE on the rest.
+   * Passes 23/23 testcases (AC).
    */
   auto imp_b_ori = [&]() -> void {
+    d.assign(n, INF);
+    set<lli> pq;
+
+    d[0] = 0;
+    pq.emplace(d[0], 0);
+
+    for (int u = 1; u < n; u++) {
+      pq.emplace(INF, u);
+    }
+
+    while (!empty(pq)) {
+      auto [cur, u] = *begin(pq);
+      pq.erase(begin(pq));
+      for (auto &[v, w] : adj[u]) {
+        if (w == INF || d[u] + w >= d[v]) continue;
+        pq.erase({ d[v], v });
+        d[v] = d[u] + w;
+        pq.emplace(d[v], v);
+      }
+    }
+  };
+
+  /* NOTE: <<- CSES (Shortest Routes I) ->>
+   * Passes 15/23 testcases, produces TLE on the rest.
+   */
+  auto imp_b_bad = [&]() -> void {
     d.assign(n, INF);
     priority_queue<lli, vector<lli>, greater<>> pq;
 
@@ -175,10 +208,8 @@ int main() {
   auto imp_b_opt = [&]() -> void {
     d.assign(n, INF);
     priority_queue<lli, vector<lli>, greater<>> pq;
-
     d[0] = 0;
     pq.emplace(0, 0);
-
     while (!empty(pq)) {
       auto [cur, u] = pq.top();
       pq.pop();
@@ -203,8 +234,8 @@ int main() {
 
     d[0] = 0;
 
-    while (pq.query(0, n-1).first != INF) {
-      auto [cur, u] = pq.query(0, n-1);
+    while (pq.query(0, n - 1).first != INF) {
+      auto [cur, u] = pq.query(0, n - 1);
       pq.update(u, { INF, u });
       if (cur != d[u]) continue;
       for (auto &[v, w] : adj[u]) {
@@ -215,9 +246,24 @@ int main() {
     }
   };
 
-  imp_b_seg();
+  auto gen_break_b_bad = [&](int n) -> void {
+    ::n = n, ::m = (n - 1) * n / 2;
+    adm.assign(n, vector<ll>(n, INF));
+    adj.assign(n, vector<ill>());
 
-  for (int i = 0; i < n; i++) cout << d[i] << " \n"[i == n - 1];
+    // 0: I   n       2*n     3*n     4*n     5*n ...
+    // 1: n   I     (n-1) 2*(n-1) 3*(n-1) 4*(n-1) ...
+    // 2: 2*n (n-1)     I   (n-2) 2*(n-1) 3*(n-1) ...
+    // ...
+
+    for (int i = 0; i < n; i++) {
+      for (int j = i + 1; j < n; j++) {
+        ll w      = (ll)(n - i) * (j - i);
+        adm[i][j] = adm[j][i] = w;
+        adj[i].emplace_back(j, w), adj[j].emplace_back(i, w);
+      }
+    }
+  };
 
   return 0;
 }
