@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="dist/reset.css" />
     <link rel="stylesheet" href="dist/reveal.css" />
-    <link rel="stylesheet" href="dist/theme/project_01.css" />
+    <link rel="stylesheet" href="dist/theme/project_03.css" />
 
     <!-- Theme used for syntax highlighted code -->
     <link rel="stylesheet" href="plugin/highlight/equilibrium-gray-light.css" />
@@ -19,844 +19,505 @@
   <body>
     <div class="reveal">
       <div class="slides">
-        <!-- Project 02 -->
+        <!-- Project 03 -->
         <section>
-          <h1>SC2001 Project 02</h1>
-          <p>Dijkstra's Algorithm</p>
+          <h1>SC2001 Project 03</h1>
+          <p>Dynamic Programming</p>
           <p><b>Team 5</b></p>
         </section>
 
         <section>
-          <h2>Setup</h2>
+          <h2>Part I</h2>
         </section>
 
         <section>
           <p>
-            To facilitate subsequent implementation, we initialize the following
-            global variables.
+            Because there are unlimited supplies of each type of object, this is
+            referred to as the <b>unbounded knapsack</b> problem. Adopting the
+            notation in the handout, our recursive definition is as follows.
           </p>
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                using ll  = long long;
-                using ill = pair<int, ll>;
-                using lli = pair<ll, int>;
-
-                mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
-                uniform_int_distribution w_dist(1, 1'000'000'000); // [INFO] edge weight
-
-                int n, m;
-                constexpr ll INF = 1'000'000'000'000'000'000LL;
-
-                vector<vector<ll>> adm;
-                vector<vector<ill>> adj;
-
-                vector<ll> d, s;
-                </script>
-              </code>
-          </pre>
-        </section>
-
-        <section>
           <p>
-            To generate a random graph, we present the following lambda
-            function.
+            \[ P(C) = \begin{cases} 0 & \text{if $C = 0$} \\ \max \left( \left\{
+            P(C-w_i) + p_i \right\} \right) & \text{for all $0 \leq i \leq n-1$
+            and $C \geq w_i$} \end{cases} \]
           </p>
-          <pre>
-              <code data-line-numbers="2|3-5|6-8|9-14|1-15" data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto gen_graph = [&](int n, int m, bool gen_adm, bool gen_adj) -> void {
-                  assert(m <= n * n);
-                  ::n = n, ::m = m;
-                  if (gen_adm) adm.assign(n, vector<ll>(n, INF));
-                  if (gen_adj) adj.assign(n, vector<ill>());
-                  vector<int> ed(m), ws(m), rg(n * n);
-                  rgs::iota(rg, 0);
-                  rgs::sample(rg, begin(ed), m, gen);
-                  for (int i = 0; i < m; i++) {
-                    int u = ed[i] / n, v = ed[i] % n;
-                    ws[i] = w_dist(gen);
-                    if (gen_adm) adm[u][v] = ws[i];
-                    if (gen_adj) adj[u].emplace_back(v, ws[i]);
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-          <blockquote>
-            To debug/print the graph, we use a few other auxiliary lambda
-            functions.
-          </blockquote>
         </section>
 
         <section>
-          <h2>Part (a)</h2>
+          <h2>Part II</h2>
+        </section>
+
+        <section>
+          <h2>Part III</h2>
         </section>
 
         <section data-auto-animate>
           <p>
-            Using an array as a priority queue is rather ambiguous phrasing...
-            For now, we'll interpret it as using the distance array directly as
-            the priority queue, i.e., we'll iterate through the array in
-            $\mathcal{O}(V)$ to determine the next <i>unvisited</i> node with
-            the <i>smallest distance</i>.
+            A natural way to perform bottom-up DP is to iterate over the objects
+            and attempt to use each one to increase the profit at each capacity
+            level.
           </p>
         </section>
 
         <section data-auto-animate>
           <p>
-            Using an array as a priority queue is rather ambiguous phrasing...
-            For now, we'll interpret it as using the distance array directly as
-            the priority queue, i.e., we'll iterate through the array in
-            $\mathcal{O}(V)$ to determine the next <i>unvisited</i> node with
-            the <i>smallest distance</i>.
+            A natural way to perform bottom-up DP is to iterate over the objects
+            and attempt to use each one to increase the profit at each capacity
+            level.
           </p>
           <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                  auto get_min = [&]() -> int {
-                    int idx = -1;
-                    ll cur  = INF;
-                    for (int i = 0; i < n; i++) {
-                      if (!s[i] && d[i] < cur) {
-                        idx = i, cur = d[i];
-                      }
-                    }
-                    return idx;
-                  };
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              int n = 3;
 
-                  auto is_empty = [&]() -> int { return get_min() == -1; };
-                </script>
-              </code>
+              vector<int> w{ 4, 6, 8 };
+              vector<ll> p{ 7, 6, 9 };
+
+              auto solve = [&](int c) -> ll {
+                vector dp(n, vector(c + 1, 0LL));
+                for (int i = 0; i < n; i++) {
+                  for (int j = 0; j <= c; j++) {
+                    dp[i][j] = i ? dp[i - 1][j] : 0;
+                    if (j - w[i] >= 0) dp[i][j] = max(dp[i][j], dp[i][j - w[i]] + p[i]);
+                  }
+                }
+                return dp[n - 1][c];
+              };
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            A natural way to perform bottom-up DP is to iterate over the objects
+            and attempt to use each one to increase the profit at each capacity
+            level.
+          </p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              int n = 3;
+
+              vector<int> w{ 4, 6, 8 };
+              vector<ll> p{ 7, 6, 9 };
+
+              auto solve = [&](int c) -> ll {
+                vector dp(n, vector(c + 1, 0LL));
+                for (int i = 0; i < n; i++) {
+                  for (int j = 0; j <= c; j++) {
+                    dp[i][j] = i ? dp[i - 1][j] : 0;
+                    if (j - w[i] >= 0) dp[i][j] = max(dp[i][j], dp[i][j - w[i]] + p[i]);
+                  }
+                }
+                return dp[n - 1][c];
+              };
+              </script>
+            </code>
+          </pre>
+          <blockquote>
+            It is evident that both the time and space complexity are
+            $\mathcal{O}(nC)$.
+          </blockquote>
+        </section>
+
+        <section>
+          Actually, memory-wise, we can do better than $\mathcal{O}(nC)$. Notice
+          that we only require the latest array as we progress through the 2D DP
+          grid.
+        </section>
+
+        <section data-auto-animate>
+          <p>Here's a revised implementation using $\mathcal{O}(C)$ memory.</p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              auto solve = [&](int c) -> ll {
+                vector dp(c + 1, 0LL);
+                for (int i = 0; i < n; i++) {
+                  for (int j = 0; j <= c; j++) {
+                    if (j - w[i] >= 0) dp[j] = max(dp[j], dp[j - w[i]] + p[i]);
+                  }
+                }
+                return dp[c];
+              };
+              </script>
+            </code>
           </pre>
         </section>
 
         <section>
+          <h2>Part IV</h2>
+        </section>
+
+        <section>
           <p>
-            Having established the necessary API for using an array as a
-            priority queue, we present the following implementation.
+            Given <b>w = [4, 6, 8]</b> and <b>p = [7, 6, 9]</b>, we obtained the
+            following results.
           </p>
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto imp_a = [&]() -> void {
-                  d.assign(n, INF);
-                  s.assign(n, false);
-                  d[0] = 0;
-                  while (!is_empty()) {
-                    int i = get_min();
-                    s[i]  = true;
-                    for (int j = 0; j < n; j++) {
-                      if (i == j || adm[i][j] == INF) continue;
-                      d[j] = min(d[j], d[i] + adm[i][j]);
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
+          <table align="center">
+            <tr>
+              <td align="right"><b>C</b></td>
+              <td align="right">0</td>
+              <td align="right">1</td>
+              <td align="right">2</td>
+              <td align="right">3</td>
+              <td align="right">4</td>
+              <td align="right">5</td>
+              <td align="right">6</td>
+              <td align="right">7</td>
+              <td align="right">8</td>
+              <td align="right">9</td>
+              <td align="right">10</td>
+              <td align="right">11</td>
+              <td align="right">12</td>
+              <td align="right">13</td>
+              <td align="right">14</td>
+            </tr>
+            <tr>
+              <td align="right"><b>DP</b></td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">7</td>
+              <td align="right">7</td>
+              <td align="right">7</td>
+              <td align="right">7</td>
+              <td align="right">14</td>
+              <td align="right">14</td>
+              <td align="right">14</td>
+              <td align="right">14</td>
+              <td align="right">21</td>
+              <td align="right">21</td>
+              <td align="right">21</td>
+            </tr>
+          </table>
+          <blockquote>The solution is <b>dp[c] = 21</b> (c = 14).</blockquote>
+        </section>
+
+        <section>
+          <p>
+            Given <b>w = [5, 6, 8]</b> and <b>p = [7, 6, 9]</b>, we obtained the
+            following results.
+          </p>
+          <table align="center">
+            <tr>
+              <td align="right"><b>C</b></td>
+              <td align="right">0</td>
+              <td align="right">1</td>
+              <td align="right">2</td>
+              <td align="right">3</td>
+              <td align="right">4</td>
+              <td align="right">5</td>
+              <td align="right">6</td>
+              <td align="right">7</td>
+              <td align="right">8</td>
+              <td align="right">9</td>
+              <td align="right">10</td>
+              <td align="right">11</td>
+              <td align="right">12</td>
+              <td align="right">13</td>
+              <td align="right">14</td>
+            </tr>
+            <tr>
+              <td align="right"><b>DP</b></td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">0</td>
+              <td align="right">7</td>
+              <td align="right">7</td>
+              <td align="right">7</td>
+              <td align="right">9</td>
+              <td align="right">9</td>
+              <td align="right">14</td>
+              <td align="right">14</td>
+              <td align="right">14</td>
+              <td align="right">16</td>
+              <td align="right">16</td>
+            </tr>
+          </table>
+          <blockquote>The solution is <b>dp[c] = 16</b> (c = 14).</blockquote>
+        </section>
+
+        <section>
+          <h2>An Alternative Solution</h2>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            More often than not, you'll encounter situations where $n,C \leq
+            10^3$, so the $\mathcal{O}(nC)$ solution would pass comfortably.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            More often than not, you'll encounter situations where $n,C \leq
+            10^3$, so the $\mathcal{O}(nC)$ solution would pass comfortably.
+          </p>
           <blockquote>
-            Note that each node is visited just <b>once</b> (outer loop).
-            Retrieval of the next node (<b>get_min</b>), checking if the
-            priority queue is empty (<b>is_empty</b>), and iterating through
-            every node in the inner loop costs $\mathcal{O}(V)$, producing a
-            total time complexity of $\mathcal{O}(V \cdot (3V)) =
-            \mathcal{O}(V^2)$.
+            However, there are rare situations where you're given $w \leq 10^3,
+            C \leq 10^9$. Let $W = w_{\max}$ from now on.
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Let $a_i$ represent the answer to a given capacity $i$, observe that
+            $a_i = \max_{j+k=i}(a_j + a_k)$, and we can further constraint $j$
+            and $k$ to $\lvert j - k \rvert \leq W$.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            Let $a_i$ represent the answer to a given capacity $i$, observe that
+            $a_i = \max_{j+k=i}(a_j + a_k)$, and we can further constraint $j$
+            and $k$ to $\lvert j - k \rvert \leq W$.
+          </p>
+          <blockquote>
+            Suppose $j > k+W$, observe that we can repeatedly deduct $W$ from
+            $j$ and add it to $k$, until the aforementioned property is
+            satisfied; this can be thought of as moving the "slot" for a single
+            object from $j$ to $k$.
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            If we had arrays $A$ and $B$ of length $n$ and $m$ respectively, the
+            array $C$ of length $n+m-1$ constructed using $C_i =
+            \max_{j+k=i}(A_j + B_k)$ is known as the $(\max, +)$
+            <b>convolution</b>.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <p>
+            If we had arrays $A$ and $B$ of length $n$ and $m$ respectively, the
+            array $C$ of length $n+m-1$ constructed using $C_i =
+            \max_{j+k=i}(A_j + B_k)$ is known as the $(\max, +)$
+            <b>convolution</b>.
+          </p>
+          <blockquote>
+            Suppose we had $[a_{x-W},\ldots,a_{x},\ldots,a_{x+W}]$ and
+            $[a_{y-W},\ldots,a_{y},\ldots,a_{y+W}]$, our goal is to compute
+            $[a_{x+y-W},\ldots,a_{x+y},\ldots,a_{x+y+W}]$.
           </blockquote>
         </section>
 
         <section>
           <p>
-            Next, we'll count the number of operations taken on complete graphs
-            of varying V.
+            Convoluting $[a_{x-W},\ldots,a_{x},\ldots,a_{x+W}]$ with
+            $[a_{y-W},\ldots,a_{y},\ldots,a_{y+W}]$ produces
+            $[c_{x+y-2W},\ldots,c_{x+y},\ldots,c_{x+y+2W}]$, of which only
+            $[c_{x+y-W},\ldots,c_{x+y}] = [a_{x+y-W},\ldots,a_{x+y}]$ is usable.
           </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_i_n.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Operations", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
         </section>
 
-        <section>
-          <p>What if we set E to 500?</p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_i_n_m_500.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Operations", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
+        <section data-auto-animate>
+          <p>
+            Convoluting this newly obtained $[a_{x+y-W},\ldots,a_{x+y}]$ with
+            $[a_{0},\ldots,a_{W},\ldots,a_{2W}]$ yields
+            $[c_{x+y-W},\ldots,c_{x+y+2W}]$ and $[c_{x+y+1},\ldots,c_{x+y+W}] =
+            [a_{x+y+1},\ldots,a_{x+y+W}]$ may be used to obtain the "tail" of
+            our desired array.
+          </p>
         </section>
 
-        <section>
-          When E is small, relative to V, there is a high chance of producing a
-          <i>disconnected</i> graph, i.e., Dijkstra's would terminate before
-          inspecting every node, resulting in much fewer than V² operations.
+        <section data-auto-animate>
+          <p>
+            Convoluting this newly obtained $[a_{x+y-W},\ldots,a_{x+y}]$ with
+            $[a_{0},\ldots,a_{W},\ldots,a_{2W}]$ yields
+            $[c_{x+y-W},\ldots,c_{x+y+2W}]$ and $[c_{x+y+1},\ldots,c_{x+y+W}] =
+            [a_{x+y+1},\ldots,a_{x+y+W}]$ may be used to obtain the "tail" of
+            our desired array.
+          </p>
+          <blockquote>
+            Concatenating $[a_{x+y-W},\ldots,a_{x+y}]$ with
+            $[a_{x+y+1},\ldots,a_{x+y+W}]$ gives us
+            $[a_{x+y-W},\ldots,a_{x+y},\ldots,a_{x+y+W}]$, as desired.
+          </blockquote>
+        </section>
+
+        <section data-auto-animate>
+          <h3>What's the best way to compute $2^{64}$?</h3>
+        </section>
+
+        <section data-auto-animate>
+          <h3>What's the best way to compute $2^{64}$?</h3>
+          <p>
+            We could do it in $64$ steps, but what if we computed $2^{1}$, then
+            used it to compute $2^{2}$, then $2^{4}$, followed by $2^{8}$ and so
+            on?
+          </p>
+          <p>This takes just seven steps!</p>
+        </section>
+
+        <section data-auto-animate>
+          <h3>What about $2^{57}$?</h3>
+        </section>
+
+        <section data-auto-animate>
+          <h3>What about $2^{57}$?</h3>
+          <p>
+            Observe that in binary, $57$ is $111001$, so we could use $2^{(2^0)}
+            \cdot 2^{(2^3)} \cdot 2^{(2^4)} \cdot 2^{(2^5)}$. These are
+            precisely the values we've precomputed earlier.
+          </p>
+        </section>
+
+        <section data-auto-animate>
+          <h3>What about $2^{57}$?</h3>
+          <p>
+            Observe that in binary, $57$ is $111001$, so we could use $2^{(2^0)}
+            \cdot 2^{(2^3)} \cdot 2^{(2^4)} \cdot 2^{(2^5)}$. These are
+            precisely the values we've precomputed earlier.
+          </p>
+          <blockquote>
+            In general, this principle is known as <b>doubling</b>, and it's
+            used in data structures like Sparse Table and Fenwick Tree.
+          </blockquote>
         </section>
 
         <section>
           <p>
-            Now, consider varying E from 0 to 10,000 while keeping V constant at
-            500.
+            Let $b_i = [2^i \cdot W - W, \ldots, 2^i \cdot W , \ldots, 2^i \cdot
+            W + W ]$, e.g., $b_0 = [0, \ldots, W , \ldots, 2W ]$.
           </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_i_m.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Operations", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "E", "display": true
-                    }
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              constexpr int WMAX = 1'000, LMAX = 20;
+              vector lvls(LMAX + 1, vector<ll>(2 * WMAX + 1));
+
+              for (int i = 0; i < n; i++) {
+                for (int j = 0; j <= 2 * WMAX; j++) {
+                  if (j - w[i] >= 0) {
+                    lvls[0][j] = max(lvls[0][j], lvls[0][j - w[i]] + p[i]);
                   }
                 }
               }
-            }
-            -->
-            </canvas>
-          </div>
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <p>
+            A convolution may be implemented in $O(W^2)$ as described earlier.
+          </p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              auto convolute = [&](const vector<ll> &a, const vector<ll> &b) {
+                int n = ssize(a), m = ssize(b);
+                vector<ll> ans(n + m - 1);
+                for (int i = 0; i < n; i++) {
+                  for (int j = 0; j < m; j++) {
+                    ans[i + j] = max(ans[i + j], a[i] + b[j]);
+                  }
+                }
+                return ans;
+              };
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <p>
+            "Merging" $[a_{x-W},\ldots,a_{x},\ldots,a_{x+W}]$ with
+            $[a_{y-W},\ldots,a_{y},\ldots,a_{y+W}]$ to compute
+            $[a_{x+y-W},\ldots,a_{x+y},\ldots,a_{x+y+W}]$ is a little tricky.
+          </p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              auto merge = [&](const vector<ll> &a, const vector<ll> &b) {
+                vector<ll> _ = convolute(a, b), ans;
+                for (int i = 0; i < WMAX + 1; i++) ans.push_back(_[i + WMAX]);
+                vector<ll> __ = convolute(lvls[0], ans), bak;
+                for (int i = 0; i < WMAX; i++) bak.push_back(__[i + WMAX + 1]);
+                for (auto &i : bak) ans.push_back(i);
+                return ans;
+              };
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <p>We may now build `lvls` from the bottom up.</p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              for (int lv = 1; lv <= LMAX; lv++) {
+                lvls[lv] = merge(lvls[lv - 1], lvls[lv - 1]);
+              }
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>Solving for a particular capacity can now be done.</p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              int cr = 0;
+              vector<ll> base;
+
+              for (int lv = LMAX; lv >= 0; lv--) {
+                if ((cr | (1 << lv)) * WMAX - WMAX >= c + 1) continue;
+                base = empty(base) ? lvls[lv] : merge(base, lvls[lv]);
+                cr |= (1 << lv);
+              }
+
+              ll ans = base[c - (cr * WMAX - WMAX)];
+              </script>
+            </code>
+          </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>Solving for a particular capacity can now be done.</p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              int cr = 0;
+              vector<ll> base;
+
+              for (int lv = LMAX; lv >= 0; lv--) {
+                if ((cr | (1 << lv)) * WMAX - WMAX >= c + 1) continue;
+                base = empty(base) ? lvls[lv] : merge(base, lvls[lv]);
+                cr |= (1 << lv);
+              }
+
+              ll ans = base[c - (cr * WMAX - WMAX)];
+              </script>
+            </code>
+          </pre>
           <blockquote>
-            Observe that when E is sufficiently large to produce a connected
-            graph with high probability, it no longer affects the time
+            Ultimately, this takes $O(W^2 \cdot \log(C))$ time and space
             complexity.
           </blockquote>
         </section>
 
         <section>
-          <h2>Part (b)</h2>
-        </section>
-
-        <section>
+          <img
+            style="border: 3px solid #323030"
+            src="/project_03/screenshot.png"
+            alt="screenshot"
+          />
           <p>
-            Observe that the classic Dijkstra described in the lecture
-            <i>cannot</i>
-            be implemented using a minimizing heap since it requires the
-            deletion of non-minimum items within the heap...
+            We now have the tools to solve
+            <a href="https://codeforces.com/gym/101064/problem/L">this</a>
+            problem...
           </p>
-          <blockquote>
-            Such an operation would require $\mathcal{O}(V)$ time.
-          </blockquote>
-        </section>
-
-        <section>
-          Therefore, some kind of self-balancing tree is usually employed
-          instead.
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto imp_b_ori = [&]() -> void {
-                  d.assign(n, INF);
-                  set<lli> pq;
-                  d[0] = 0, pq.emplace(d[0], 0);
-                  for (int u = 1; u < n; u++) pq.emplace(INF, u);
-                  while (!empty(pq)) {
-                    auto [cur, u] = *begin(pq);
-                    pq.erase(begin(pq));
-                    for (auto &[v, w] : adj[u]) {
-                      if (w == INF || d[u] + w >= d[v]) continue;
-                      pq.erase({ d[v], v });
-                      d[v] = d[u] + w;
-                      pq.emplace(d[v], v);
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-        </section>
-
-        <section>
-          Fortunately, Dijkstra's algorithm also has a modified form that
-          leverages the <b>lazy deletion</b> technique. This can be done with a
-          minimizing heap, as required in the problem.
-        </section>
-
-        <section>
-          <p>
-            By default, C++'s heap is a maximizing heap; to get a
-            <b>minimizing heap</b>, we can specify the following template
-            parameters.
-          </p>
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                priority_queue<lli, vector<lli>, greater<>> pq;
-                </script>
-              </code>
-          </pre>
-          <blockquote>
-            If you happen to forget the syntax, a common trick is to invert all
-            edge weights/distances...
-          </blockquote>
-        </section>
-
-        <section data-auto-animate>
-          <p>First, let's examine a common mistake in the implementation.</p>
-          <pre data-id="animate-code">
-              <code data-line-numbers="2-4|5-6|7-15|1-16" data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto imp_b_bad = [&]() -> void {
-                  d.assign(n, INF);
-                  priority_queue<lli, vector<lli>, greater<>> pq;
-                  d[0] = 0;
-                  pq.emplace(0, 0);
-                  for (int u = 1; u < n; u++) pq.emplace(INF, u);
-                  while (!empty(pq)) {
-                    auto [cur, u] = pq.top();
-                    pq.pop();
-                    for (auto &[v, w] : adj[u]) {
-                      if (w == INF || d[u] + w >= d[v]) continue;
-                      d[v] = d[u] + w;
-                      pq.emplace(d[v], v);
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-        </section>
-
-        <section data-auto-animate>
-          <p>First, let's examine a common mistake in the implementation.</p>
-          <pre data-id="animate-code">
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto imp_b_bad = [&]() -> void {
-                  d.assign(n, INF);
-                  priority_queue<lli, vector<lli>, greater<>> pq;
-                  d[0] = 0;
-                  pq.emplace(0, 0);
-                  for (int u = 1; u < n; u++) pq.emplace(INF, u);
-                  while (!empty(pq)) {
-                    auto [cur, u] = pq.top();
-                    pq.pop();
-                    for (auto &[v, w] : adj[u]) {
-                      if (w == INF || d[u] + w >= d[v]) continue;
-                      d[v] = d[u] + w;
-                      pq.emplace(d[v], v);
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-          <blockquote>
-            Unfortunately, it passed only 15/23 test cases on CSES's Shortest
-            Routes I, while receiving the TLE verdict on the remaining 8 test
-            cases.
-          </blockquote>
-        </section>
-
-        <section>
-          <p>
-            Notice that in this edge case, the heap can contain up to
-            $\mathcal{O}(V^2)$ elements, each of which take $\mathcal{O}(V)$
-            operations to process, leading to an awful $\mathcal{O}(V^3)$ time
-            complexity.
-          </p>
-
-          <pre data-id="animate-code">
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto gen_break_b_bad = [&](int n) -> void {
-                  // 0: I   n       2*n     3*n     4*n     5*n ...
-                  // 1: n   I     (n-1) 2*(n-1) 3*(n-1) 4*(n-1) ...
-                  // 2: 2*n (n-1)     I   (n-2) 2*(n-1) 3*(n-1) ...
-                  // ...
-                  ::n = n, ::m = (n - 1) * n / 2;
-                  adm.assign(n, vector<ll>(n, INF));
-                  adj.assign(n, vector<ill>());
-                  for (int i = 0; i < n; i++) {
-                    for (int j = i + 1; j < n; j++) {
-                      ll w      = (ll)(n - i) * (j - i);
-                      adm[i][j] = adm[j][i] = w;
-                      adj[i].emplace_back(j, w), adj[j].emplace_back(i, w);
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-        </section>
-
-        <section>
-          Observe that we don't need to insert all nodes at the start, and we
-          also need to perform a check to guarantee that the current node is the
-          most recently updated one (i.e., minimum distance).
-        </section>
-
-        <section>
-          <p>
-            This implementation receives the AC verdict on CSES's Shortest
-            Routes I.
-          </p>
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto imp_b_opt = [&]() -> void {
-                  d.assign(n, INF);
-                  priority_queue<lli, vector<lli>, greater<>> pq;
-                  d[0] = 0;
-                  pq.emplace(0, 0);
-                  while (!empty(pq)) {
-                    auto [cur, u] = pq.top();
-                    pq.pop();
-                    if (cur != d[u]) continue;
-                    for (auto &[v, w] : adj[u]) {
-                      if (w == INF || d[u] + w >= d[v]) continue;
-                      d[v] = d[u] + w;
-                      pq.emplace(d[v], v);
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-        </section>
-
-        <section data-auto-animate>
-          <p>
-            Observe that the initial assignment to the distance array costs
-            $\mathcal{O}(V)$ time, and for each possible "improvement" in
-            distance, our heap size is incremented by one. There can be
-            $\mathcal{O}(E)$ such improvements, and each heap operation can take
-            up to $\mathcal{O}(\log_2 E)$ time. Therefore, the total time
-            complexity is $\mathcal{O}(V + E \cdot \log_2 E)$.
-          </p>
-        </section>
-
-        <section data-auto-animate>
-          <p>
-            Observe that the initial assignment to the distance array costs
-            $\mathcal{O}(V)$ time, and for each possible "improvement" in
-            distance, our heap size is incremented by one. There can be
-            $\mathcal{O}(E)$ such improvements, and each heap operation can take
-            up to $\mathcal{O}(\log_2 E)$ time. Therefore, the total time
-            complexity is $\mathcal{O}(V + E \cdot \log_2 E)$.
-          </p>
-          <blockquote>
-            Since $E \leq V^2$, another valid representation is $\mathcal{O}(V +
-            E \cdot \log_2 V^2)$ = $\mathcal{O}(V + E \cdot \log_2 V)$
-          </blockquote>
-        </section>
-
-        <section>
-          <p>
-            By varying V and keeping E at 2,500, we obtained the following
-            results.
-          </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_ii_n.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Operations", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
-          <blockquote>
-            In practice, it is rarely the case that every edge improves the
-            distance (worst case assumption).
-          </blockquote>
-        </section>
-
-        <section>
-          <p>Next, we'll fix V at 1,000 and vary E.</p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_ii_m.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Operations", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "E", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
-        </section>
-
-        <section>
-          <p>
-            Finally, let's consider the edge case mentioned earlier where every
-            edge leads to an insertion.
-          </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_ii_edge.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Operations", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "E", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
-        </section>
-
-        <section>
-          <h2>Part (c)</h2>
-        </section>
-
-        <section>
-          <p>
-            In terms of memory, one of the major drawbacks of adjacency matrices
-            is the $\mathcal{O}(V^2)$ memory that it requires compared to to the
-            $\mathcal{O}(V + E)$ memory for adjacency lists.
-          </p>
-          <p>
-            This is very inefficient for <b>sparse graphs</b> and on many
-            problems where $V \leq 10^5$, you wouldn't even be able to allocate
-            enough memory without getting a segmentation fault.
-          </p>
-        </section>
-
-        <section data-auto-animate>
-          <p>
-            In terms of time complexity, $\mathcal{O}(V + E \cdot \log_2 E)$ is
-            better than $\mathcal{O}(V^2)$ under most circumstances.
-          </p>
-        </section>
-
-        <section data-auto-animate>
-          <p>
-            In terms of time complexity, $\mathcal{O}(V + E \cdot \log_2 E)$ is
-            better than $\mathcal{O}(V^2)$ under most circumstances.
-          </p>
-          <blockquote>
-            However, when $E \approx V^2$ (e.g., complete graph), the former
-            evolves into $\mathcal{O}(V^2 \cdot \log_2 V)$, which is inferior to
-            $\mathcal{O}(V^2)$. Therefore, in such cases, we'd prefer part (a)'s
-            implementation.
-          </blockquote>
-        </section>
-
-        <section>
-          <p>
-            First, let's vary V while keeping E at 500. Notice that part (b)'s
-            implementation is generally preferable except for small V where part
-            (a)'s implementation performs slightly better.
-          </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_iii_n.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Runtime (ms)", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
-        </section>
-
-        <section>
-          <p>
-            On complete graphs, it is evident that the logarithmic factor
-            results in part (b)'s implementation being slightly slower.
-          </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_iii_complete.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Runtime (ms)", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
-        </section>
-
-        <section>
-          <p>
-            Finally, we'd like to offer another interpretation of "using an
-            array as a priority queue". Instead of iterating over the distance
-            array in $\mathcal{O}(V)$, let's construct a <b>segment tree</b>
-            instead.
-          </p>
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                class SegTree {
-                  int n;
-                  vector<lli> a, tree;
-                  void build(int i, int l, int r) {
-                    if (l == r) tree[i] = a[l];
-                    else {
-                      int m = (l + r) / 2;
-                      build(2 * i, l, m);
-                      build(2 * i + 1, m + 1, r);
-                      tree[i] = conquer(tree[2 * i], tree[2 * i + 1]);
-                    }
-                  }
-                  void update(int i, int tl, int tr, int pos, lli val) {
-                    if (tl == tr) tree[i] = val;
-                    else {
-                      int tm = (tl + tr) / 2;
-                      if (pos <= tm) update(2 * i, tl, tm, pos, val);
-                      else update(2 * i + 1, tm + 1, tr, pos, val);
-                      tree[i] = conquer(tree[2 * i], tree[2 * i + 1]);
-                    }
-                  }
-                  lli query(int i, int tl, int tr, int l, int r) {
-                    if (l > r) return { INF, -1 };
-                    if (l == tl && r == tr) return tree[i];
-                    int tm = (tl + tr) / 2;
-                    return conquer(
-                        query(2 * i, tl, tm, l, min(r, tm)),
-                        query(2 * i + 1, tm + 1, tr, max(l, tm + 1), r));
-                  }
-
-                public:
-                  SegTree(vector<lli> &a)
-                      : a(a) {
-                    n = ssize(a);
-                    tree.assign(4 * n, {});
-                    build(1, 0, n - 1);
-                  }
-                  lli conquer(lli x, lli y) { return min(x, y); }
-                  void update(int pos, lli val) { update(1, 0, n - 1, pos, val); }
-                  lli query(int l, int r) { return query(1, 0, n - 1, l, r); }
-                };
-                </script>
-              </code>
-          </pre>
-        </section>
-
-        <section>
-          Both point updates and range queries cost $\mathcal{O}(\log_2 V)$, and
-          it could be used as a priority queue in place of a binary heap.
-          <pre>
-              <code data-line-numbers data-trim data-noescape class="cpp">
-                <script type="text/template">
-                auto imp_b_seg = [&]() -> void {
-                  d.assign(n, INF), d[0] = 0;
-                  vector<lli> _(n);
-                  for (int i = 1; i < n; i++) _[i] = { INF, i };
-                  SegTree pq(_);
-                  while (pq.query(0, n - 1).first != INF) {
-                    auto [cur, u] = pq.query(0, n - 1);
-                    pq.update(u, { INF, u });
-                    if (cur != d[u]) continue;
-                    for (auto &[v, w] : adj[u]) {
-                      if (w == INF || d[u] + w >= d[v]) continue;
-                      d[v] = d[u] + w;
-                      pq.update(v, { d[v], v });
-                    }
-                  }
-                };
-                </script>
-              </code>
-          </pre>
-          <blockquote>
-            Note that part (a)'s algorithm is still $\mathcal{O}(V^2)$ because
-            for every node, we still have to iterate over $\mathcal{O}(V)$ other
-            nodes in the inner loop.
-          </blockquote>
-        </section>
-
-        <section>
-          <p>
-            Just as we did earlier, let's vary V while keeping E at 500. Notice
-            that the segment tree offers a tiny speedup as more often than not,
-            $\mathcal{O}(\log_2 (V))$ is better than $\mathcal{O}(\log_2 (E))$.
-          </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_iii_n_seg.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Runtime (ms)", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
-        </section>
-
-        <section>
-          <p>
-            On complete graphs, the difference in logarithmic factors is even
-            more obvious.
-          </p>
-          <div>
-            <canvas
-              data-chart="line"
-              data-chart-src="project_02/part_iii_complete_seg.txt"
-              style="height: 45vh"
-            >
-              <!--
-            {
-              "options": {
-                "animation": false,
-                "scales": {
-                  "y": {
-                    "title": {
-                      "text": "Runtime (ms)", "display": true
-                    }
-                  },
-                  "x": {
-                    "title": {
-                      "text": "V", "display": true
-                    }
-                  }
-                }
-              }
-            }
-            -->
-            </canvas>
-          </div>
         </section>
 
         <section>
@@ -872,14 +533,17 @@
           <h3>References</h3>
           <ul style="font-size: 26px">
             <li>
-              Halim, S., Halim, F., & Effendy, S. (2020). Competitive
-              programming 4: The lower bound of programming contests in the
-              2020s. book 1 Chapter 1-4. Lulu.com.
+              Fenwick tree. Fenwick Tree - Algorithms for Competitive
+              Programming. (2024, July 31).
+              https://cp-algorithms.com/data_structures/fenwick.html
             </li>
             <li>
-              Segment tree. Segment Tree - Algorithms for Competitive
-              Programming. (2023, December 20).
-              https://cp-algorithms.com/data_structures/segment_tree.html
+              USP, M. (2016). Problem L. The Knapsack Problem. Codeforces.
+              https://codeforces.com/gym/101064/problem/L
+            </li>
+            <li>
+              errorgorn. (2021). [tutorial] knapsack, subset sum and the (max,+)
+              convolution. Codeforces. https://codeforces.com/blog/entry/98663
             </li>
           </ul>
         </section>
