@@ -54,8 +54,8 @@
             alt="screenshot"
           />
           <p>
-            Here's the subproblem graph, where each node represents the
-            capacity and the edges represent the transitions between DP states.
+            Here's the subproblem graph, where each node represents the capacity
+            and the edges represent the transitions between DP states.
           </p>
         </section>
 
@@ -156,6 +156,29 @@
               </script>
             </code>
           </pre>
+        </section>
+
+        <section data-auto-animate>
+          <p>Here's a revised implementation using $\mathcal{O}(C)$ memory.</p>
+          <pre>
+            <code data-line-numbers data-trim data-noescape class="cpp">
+              <script type="text/template">
+              auto solve = [&](int c) -> ll {
+                vector dp(c + 1, 0LL);
+                for (int i = 0; i < n; i++) {
+                  for (int j = 0; j <= c; j++) {
+                    if (j - w[i] >= 0) dp[j] = max(dp[j], dp[j - w[i]] + p[i]);
+                  }
+                }
+                return dp[c];
+              };
+              </script>
+            </code>
+          </pre>
+          <blockquote>
+            For problems where there are multiple objects with the same weight,
+            you could "fuse" them into one object with the best profit!
+          </blockquote>
         </section>
 
         <section>
